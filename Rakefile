@@ -13,10 +13,12 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "webrobots"
-  gem.homepage = "http://github.com/knu/webrobots"
+#  gem.homepage = "http://github.com/knu/webrobots"
   gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.summary = %Q{A library to help write robots.txt compliant web robots}
+  gem.description = <<-'EOS'
+This library helps write robots.txt compliant web robots.
+  EOS
   gem.email = "knu@idaemons.org"
   gem.authors = ["Akinori MUSHA"]
   # Include your dependencies below. Runtime dependencies are required when using your gem,
@@ -41,6 +43,12 @@ Rcov::RcovTask.new do |test|
 end
 
 task :default => :test
+
+task :test => 'lib/webrobots/robotstxt.rb'
+
+file 'lib/webrobots/robotstxt.rb' => 'lib/webrobots/robotstxt.ry' do
+  sh 'racc', '-o', 'lib/webrobots/robotstxt.rb', 'lib/webrobots/robotstxt.ry'
+end
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
