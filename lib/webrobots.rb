@@ -30,6 +30,7 @@ class WebRobots
   # raised.
   def allowed?(url)
     site, request_uri = split_uri(url)
+    return true if request_uri == '/robots.txt'
     robots_txt(site).allow?(request_uri)
   end
 
