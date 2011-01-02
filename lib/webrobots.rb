@@ -21,6 +21,9 @@ class WebRobots
     @robotstxt = {}
   end
 
+  # Returns the robot name initially given.
+  attr_reader :user_agent
+
   # Tests if the robot is allowed to access a resource at +url+.  If a
   # malformed URI string is given, URI::InvalidURIError is raised.  If
   # a relative URI or a non-HTTP/HTTPS URI is given, ArgumentError is
