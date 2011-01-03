@@ -14,10 +14,10 @@ Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "webrobots"
 #  gem.homepage = "http://github.com/knu/webrobots"
-  gem.license = "MIT"
-  gem.summary = %Q{A library to help write robots.txt compliant web robots}
+  gem.license = "2-clause BSDL"
+  gem.summary = %Q{A Ruby library to help write robots.txt compliant web robots}
   gem.description = <<-'EOS'
-This library helps write robots.txt compliant web robots.
+This library helps write robots.txt compliant web robots in Ruby.
   EOS
   gem.email = "knu@idaemons.org"
   gem.authors = ["Akinori MUSHA"]
