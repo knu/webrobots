@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = %q{webrobots}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Akinori MUSHA"]
   s.date = %q{2011-01-03}
-  s.description = %q{This library helps write robots.txt compliant web robots.
+  s.description = %q{This library helps write robots.txt compliant web robots in Ruby.
 }
   s.email = %q{knu@idaemons.org}
   s.extra_rdoc_files = [
@@ -29,12 +29,13 @@ Gem::Specification.new do |s|
     "lib/webrobots/robotstxt.rb",
     "lib/webrobots/robotstxt.ry",
     "test/helper.rb",
-    "test/test_webrobots.rb"
+    "test/test_webrobots.rb",
+    "webrobots.gemspec"
   ]
-  s.licenses = ["MIT"]
+  s.licenses = ["2-clause BSDL"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.4.1}
-  s.summary = %q{A library to help write robots.txt compliant web robots}
+  s.summary = %q{A Ruby library to help write robots.txt compliant web robots}
   s.test_files = [
     "test/helper.rb",
     "test/test_webrobots.rb"
