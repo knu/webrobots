@@ -2,6 +2,22 @@
 
 This is a library to help write robots.txt compliant web robots.
 
+== Usage
+
+  require 'webrobots'
+  require 'uri'
+  require 'net/http'
+
+  robots = WebRobots.new('MyBot/1.0')
+
+  uri = URI('http://digg.com/news/24hr')
+  if robots.disallowed?(uri)
+    STDERR.puts "Access disallowed: #{uri}"
+    exit 1
+  end
+  body = Net::HTTP.get(uri)
+  # ...
+
 == Contributing to webrobots
  
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
