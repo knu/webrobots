@@ -1,6 +1,11 @@
 require 'webrobots/robotstxt'
 require 'uri'
 require 'net/https'
+if defined?(Nokogiri)
+  require 'webrobots/nokogiri'
+else
+  autoload :Nokogiri, 'webrobots/nokogiri'
+end
 
 class WebRobots
   # Creates a WebRobots object for a robot named +user_agent+, with

@@ -288,4 +288,33 @@ Disallow: /
       }
     end
   end
+
+  context "meta robots tag" do
+    setup do
+      @doc = Nokogiri::HTML(<<-HTML)
+<html>
+  <head>
+    <meta name="ROBOTS" content="NOFOLLOW">
+    <meta name="Slurp" content="noindex,nofollow">
+    <meta name="googlebot" content="noarchive, noindex">
+  </head>
+  <body>
+    test
+  </body>
+</html>
+      HTML
+    end
+
+    should "be properly parsed when given in HTML string" do
+      assert !@doc.noindex?
+      assert  @doc.nofollow?
+
+      assert  @doc.noindex?('slurp')
+      assert  @doc.nofollow?('slurp')
+
+      assert  @doc.noindex?('googlebot')
+      assert !@doc.nofollow?('googlebot')
+      assert  @doc.meta_robots('googlebot').include?('noarchive')
+    end
+  end
 end
