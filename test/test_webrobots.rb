@@ -283,9 +283,9 @@ Disallow: /
         assert !@testbot.allowed?("http://store.apple.com/vieworder")
         assert @msnbot.allowed?("http://store.apple.com/vieworder")
       }
-#      assert_nothing_raised {
+      assert_nothing_raised {
         assert !@testbot.allowed?("http://github.com/login")
-#      }
+      }
     end
   end
 end
