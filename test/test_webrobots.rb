@@ -259,6 +259,7 @@ Disallow: /2heavy/
 Allow: /2heavy/*.html
 Option1: Foo
 Option2: Hello
+Crawl-Delay: 1.5
 
 User-Agent: *
 Disallow: /2heavy/
@@ -298,6 +299,15 @@ Option3: Hi
         http://www.example.org/sitemap-host1.xml
         http://www.example.org/sitemap-host2.xml
       ], @robots_hisbot.sitemaps('http://www.example.org/')
+
+      t1 = Time.now
+      @robots_mybot.allowed?('http://www.example.org/')
+      @robots_mybot.allowed?('http://www.example.org/article1.html')
+      t2 = Time.now
+      assert_in_delta 1.5, t2 - t1, 0.1
+      @robots_mybot.allowed?('http://www.example.org/article2.html')
+      t3 = Time.now
+      assert_in_delta 1.5, t3 - t2, 0.1
     end
   end
 
