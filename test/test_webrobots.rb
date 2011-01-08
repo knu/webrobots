@@ -266,6 +266,7 @@ Disallow: /2heavy/
 Allow: /2heavy/*.html
 Option1: Bar
 Option3: Hi
+Crawl-Delay:
           TXT
         else
           raise "#{uri} is not supposed to be fetched"

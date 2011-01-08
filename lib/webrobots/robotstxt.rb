@@ -46,6 +46,9 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
 
         until s.eos?
           if t = s.scan(/[ \t]*\r?\n/)
+            if value_expected
+              @q << [:VALUE, '']
+            end
             @q << [:EOL, t]
             value_expected = false
           elsif t = s.scan(/[ \t]+/)
@@ -54,6 +57,9 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
             @q << [t, t]
             value_expected = true
           elsif t = s.scan(/#.*/)
+            if value_expected
+              @q << [:VALUE, '']
+            end
             @q << [:COMMENT, t]
           else
             if value_expected
