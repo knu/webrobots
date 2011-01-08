@@ -13,8 +13,10 @@ class WebRobots
   #
   # * :http_get => a custom method, proc, or anything that responds to
   #   .call(uri), to be used for fetching robots.txt.  It must return
-  #   the response body if successful, or raise Net::HTTPNotFound if
-  #   the resource is not found.  Any other errror is regarded as
+  #   the response body if successful.  If the resource is not found,
+  #   it must either return nil or emulate a Net::HTTPNotFound error
+  #   that the net/http library would raise, using
+  #   Net::HTTPServerException.  Any other error raised is regarded as
   #   blanket ban.
   def initialize(user_agent, options = nil)
     @user_agent = user_agent
@@ -25,6 +27,12 @@ class WebRobots
 
     @robotstxt = {}
   end
+
+  @@anon_parser = RobotsTxt::Parser.new('Anonymous')
+  @@disallower = @@anon_parser.parse(<<-TXT, nil)
+User-Agent: *
+Disallow: /
+  TXT
 
   # Returns the robot name initially given.
   attr_reader :user_agent
@@ -95,16 +103,20 @@ class WebRobots
   def robots_txt(site)
     cache_robots_txt(site) {
       fetch_robots_txt(site)
-    }
+    } or @@disallower
   end
 
   def fetch_robots_txt(site)
-    begin
-      body = @http_get.call(site + 'robots.txt')
-    rescue Net::HTTPNotFound
-      return ''
-    end
-    @parser.parse(body, site)
+    body =
+      begin
+        @http_get.call(site + 'robots.txt')
+      rescue => e
+        if e.is_a?(Net::HTTPExceptions) && e.response.is_a?(Net::HTTPNotFound)
+          ''
+        else
+          nil
+        end
+      end and @parser.parse(body, site)
   end
 
   def cache_robots_txt(site, &block)

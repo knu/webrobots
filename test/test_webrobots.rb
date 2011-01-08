@@ -25,7 +25,9 @@ class TestWebRobots < Test::Unit::TestCase
 	
             TXT
           when 'http://site5.example.org/robots.txt'
-            raise Net::HTTPNotFound
+            raise Net::HTTPServerException.new(
+              'Not Found',
+              Net::HTTPNotFound.new('1.1', '404', 'Not Found'))
           else
             raise "#{uri} is not supposed to be fetched"
           end
@@ -41,6 +43,42 @@ class TestWebRobots < Test::Unit::TestCase
       assert @robots.allowed?('http://site3.example.org/private/secret.txt')
       assert @robots.allowed?('http://site4.example.org/index.html')
       assert @robots.allowed?('http://site4.example.org/private/secret.txt')
+      assert @robots.allowed?('http://site5.example.org/index.html')
+      assert @robots.allowed?('http://site5.example.org/private/secret.txt')
+    end
+  end
+
+  context "robots.txt that cannot be fetched" do
+    setup do
+      @robots = WebRobots.new('RandomBot', :http_get => lambda { |uri|
+          case uri.to_s
+          when 'http://site1.example.org/robots.txt'
+            raise Net::HTTPFatalError.new(
+              'Internal Server Error',
+              Net::HTTPInternalServerError.new('1.1', '500', 'Internal Server Error'))
+          when 'http://site2.example.org/robots.txt'
+            raise Net::HTTPRetriableError.new(
+              'Found',
+              Net::HTTPFound.new('1.1', '302', 'Found'))
+          when 'http://site3.example.org/robots.txt'
+            raise Errno::ECONNREFUSED
+          when 'http://site4.example.org/robots.txt'
+            raise SocketError, "getaddrinfo: nodename nor servname provided, or not known"
+          else
+            raise "#{uri} is not supposed to be fetched"
+          end
+        })
+    end
+
+    should "disallow any robot" do
+      assert @robots.disallowed?('http://site1.example.org/index.html')
+      assert @robots.disallowed?('http://site1.example.org/private/secret.txt')
+      assert @robots.disallowed?('http://site2.example.org/index.html')
+      assert @robots.disallowed?('http://site2.example.org/private/secret.txt')
+      assert @robots.disallowed?('http://site3.example.org/index.html')
+      assert @robots.disallowed?('http://site3.example.org/private/secret.txt')
+      assert @robots.disallowed?('http://site4.example.org/index.html')
+      assert @robots.disallowed?('http://site4.example.org/private/secret.txt')
     end
   end
 
