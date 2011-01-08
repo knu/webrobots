@@ -302,9 +302,12 @@ Crawl-Delay: 1.5
 User-Agent: *
 Disallow: /2heavy/
 Allow: /2heavy/*.html
+# These are wrong but should be allowed
+Allow: /2heavy/%
+Crawl-Delay:
+#
 Option1: Bar
 Option3: Hi
-Crawl-Delay:
           TXT
         else
           raise "#{uri} is not supposed to be fetched"
