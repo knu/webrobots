@@ -24,10 +24,6 @@ class TestWebRobots < Test::Unit::TestCase
   #comment
 	
             TXT
-          when 'http://site5.example.org/robots.txt'
-            raise Net::HTTPServerException.new(
-              'Not Found',
-              Net::HTTPNotFound.new('1.1', '404', 'Not Found'))
           else
             raise "#{uri} is not supposed to be fetched"
           end
@@ -43,8 +39,6 @@ class TestWebRobots < Test::Unit::TestCase
       assert @robots.allowed?('http://site3.example.org/private/secret.txt')
       assert @robots.allowed?('http://site4.example.org/index.html')
       assert @robots.allowed?('http://site4.example.org/private/secret.txt')
-      assert @robots.allowed?('http://site5.example.org/index.html')
-      assert @robots.allowed?('http://site5.example.org/private/secret.txt')
     end
   end
 
@@ -64,6 +58,8 @@ class TestWebRobots < Test::Unit::TestCase
             raise Errno::ECONNREFUSED
           when 'http://site4.example.org/robots.txt'
             raise SocketError, "getaddrinfo: nodename nor servname provided, or not known"
+          when 'http://site5.example.org/robots.txt'
+            nil
           else
             raise "#{uri} is not supposed to be fetched"
           end
@@ -79,6 +75,8 @@ class TestWebRobots < Test::Unit::TestCase
       assert @robots.disallowed?('http://site3.example.org/private/secret.txt')
       assert @robots.disallowed?('http://site4.example.org/index.html')
       assert @robots.disallowed?('http://site4.example.org/private/secret.txt')
+      assert @robots.disallowed?('http://site5.example.org/index.html')
+      assert @robots.disallowed?('http://site5.example.org/private/secret.txt')
     end
   end
 
@@ -238,38 +236,73 @@ Disallow: /~joe/index.html
 
   context "robots.txt with errors" do
     setup do
+      @turn1 = @turn2 = 0
       @http_get = lambda { |uri|
         case uri.to_s
         when 'http://www.example.org/robots.txt'
-          <<-'TXT'
+          if (@turn1 += 1) % 2 == 1
+            <<-'TXT'
 # some comment
-User-Agent: first
-# Disallow: /
-Disallow: /2heavy/
-# Allow: /2heavy/notsoheavy
-Allow: /2heavy/*.html
-#
-User-Agent: next
-# Disallow: /
-Disallow: /2heavy/
-# Allow: /2heavy/notsoheavy
-Allow: /2heavy/*.html
-          TXT
-        when 'http://www.example.com/robots.txt'
-          <<-'TXT'
-# some comment
-#User-Agent: first
+User-Agent: thebot
 # Disallow: /
 Disallow: /2heavy/
 # Allow: /2heavy/notsoheavy
 Allow: /2heavy/*.html
 
-User-Agent: next
+User-Agent: anotherbot
 # Disallow: /
 Disallow: /2heavy/
 # Allow: /2heavy/notsoheavy
 Allow: /2heavy/*.html
-          TXT
+            TXT
+          else
+            <<-'TXT'
+# some comment
+User-Agent: thebot
+# Disallow: /
+Disallow: /2heavy/
+# Allow: /2heavy/notsoheavy
+Allow: /2heavy/*.html
+#
+User-Agent: anotherbot
+# Disallow: /
+Disallow: /2heavy/
+# Allow: /2heavy/notsoheavy
+Allow: /2heavy/*.html
+            TXT
+          end
+        when 'http://www.example.com/robots.txt'
+          if (@turn2 += 1) % 2 == 1
+            <<-'TXT'
+# some comment
+#User-Agent: thebot
+# Disallow: /
+Disallow: /2heavy/
+# Allow: /2heavy/notsoheavy
+Allow: /2heavy/*.html
+
+User-Agent: anotherbot
+# Disallow: /
+Disallow: /2heavy/
+# Allow: /2heavy/notsoheavy
+Allow: /2heavy/*.html
+            TXT
+          else
+            <<-'TXT'
+# some comment
+User-Agent: thebot
+# Disallow: /
+Disallow: /2heavy/
+# Allow: /2heavy/notsoheavy
+Allow: /2heavy/*.html
+
+User-Agent: anotherbot
+# Disallow: /
+Disallow: /2heavy/
+# Allow: /2heavy/notsoheavy
+Allow: /2heavy/*.html
+            TXT
+          end
         else
           raise "#{uri} is not supposed to be fetched"
         end
@@ -277,12 +310,54 @@ Allow: /2heavy/*.html
     end
 
     should "raise ParseError" do
-      robots = WebRobots.new('RandomBot', :http_get => @http_get)
-      assert_raise(WebRobots::ParseError) {
-        robots.allowed?('http://www.example.org/2heavy/index.html')
+      robots = WebRobots.new('TheBot', :http_get => @http_get)
+
+      url = 'http://www.example.org/2heavy/index.php'
+
+      assert_nil robots.error(url)
+      assert !robots.allowed?(url)
+      assert_nothing_raised {
+        robots.error!(url)
       }
+
+      robots.reset(url)
+
+      assert robots.allowed?(url)
+      assert_instance_of WebRobots::ParseError, robots.error(url)
       assert_raise(WebRobots::ParseError) {
-        robots.allowed?('http://www.example.com/2heavy/index.html')
+        robots.error!(url)
+      }
+
+      robots.reset(url)
+
+      assert_nil robots.error(url)
+      assert !robots.allowed?(url)
+      assert_nothing_raised {
+        robots.error!(url)
+      }
+
+      url = 'http://www.example.com/2heavy/index.php'
+
+      assert robots.allowed?(url)
+      assert_instance_of WebRobots::ParseError, robots.error(url)
+      assert_raise(WebRobots::ParseError) {
+        robots.error!(url)
+      }
+
+      robots.reset(url)
+
+      assert_nil robots.error(url)
+      assert !robots.allowed?(url)
+      assert_nothing_raised {
+        robots.error!(url)
+      }
+
+      robots.reset(url)
+
+      assert robots.allowed?(url)
+      assert_instance_of WebRobots::ParseError, robots.error(url)
+      assert_raise(WebRobots::ParseError) {
+        robots.error!(url)
       }
     end
   end

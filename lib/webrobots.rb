@@ -13,11 +13,9 @@ class WebRobots
   #
   # * :http_get => a custom method, proc, or anything that responds to
   #   .call(uri), to be used for fetching robots.txt.  It must return
-  #   the response body if successful.  If the resource is not found,
-  #   it must either return nil or emulate a Net::HTTPNotFound error
-  #   that the net/http library would raise, using
-  #   Net::HTTPServerException.  Any other error raised is regarded as
-  #   blanket ban.
+  #   the response body if successful, return an empty string if the
+  #   resource is not found, and return nil or raise any error on
+  #   failure.  Redirects should be handled within this proc.
   def initialize(user_agent, options = nil)
     @user_agent = user_agent
     @parser = RobotsTxt::Parser.new(user_agent)
@@ -25,14 +23,13 @@ class WebRobots
     options ||= {}
     @http_get = options[:http_get] || method(:http_get)
 
-    @robotstxt = {}
+    @robotstxt = create_cache()
   end
 
-  @@anon_parser = RobotsTxt::Parser.new('Anonymous')
-  @@disallower = @@anon_parser.parse(<<-TXT, nil)
-User-Agent: *
-Disallow: /
-  TXT
+  # :nodoc:
+  def create_cache
+    Hash.new	# Must respond to [], []=, and delete.
+  end
 
   # Returns the robot name initially given.
   attr_reader :user_agent
@@ -42,9 +39,9 @@ Disallow: /
   # a relative URI or a non-HTTP/HTTPS URI is given, ArgumentError is
   # raised.
   def allowed?(url)
-    site, request_uri = split_uri(url)
+    robots_txt, request_uri = evaluate(url)
     return true if request_uri == '/robots.txt'
-    robots_txt(site).allow?(request_uri)
+    robots_txt.allow?(request_uri)
   end
 
   # Equivalent to !allowed?(url).
@@ -56,8 +53,7 @@ Disallow: /
   # with each field name lower-cased.  See allowed?() for a list of
   # errors that may be raised.
   def options(url)
-    site, = split_uri(url)
-    robots_txt(site).options
+    robots_txt_for(url).options
   end
 
   # Equivalent to option(url)[token.downcase].
@@ -68,8 +64,25 @@ Disallow: /
   # Returns an array of Sitemap URLs.  See allowed?() for a list of
   # errors that may be raised.
   def sitemaps(url)
+    robots_txt_for(url).sitemaps
+  end
+
+  # Returns an error object if there is an error in fetching or
+  # parsing robots.txt of the site +url+.
+  def error(url)
+    robots_txt_for(url).error
+  end
+
+  # Raises the error if there was an error in fetching or parsing
+  # robots.txt of the site +url+.
+  def error!(url)
+    robots_txt_for(url).error!
+  end
+
+  # Removes robots.txt cache for the site +url+.
+  def reset(url)
     site, = split_uri(url)
-    robots_txt(site).sitemaps
+    @robotstxt.delete(site)
   end
 
   private
@@ -100,31 +113,27 @@ Disallow: /
     return site, request_uri
   end
 
-  def robots_txt(site)
-    cache_robots_txt(site) {
-      fetch_robots_txt(site)
-    } or @@disallower
+  def evaluate(url)
+    site, request_uri = split_uri(url)
+    return get_robots_txt(site), request_uri
+  end
+
+  def robots_txt_for(url)
+    site, = split_uri(url)
+    get_robots_txt(site)
+  end
+
+  def get_robots_txt(site)
+    @robotstxt[site] ||= fetch_robots_txt(site)
   end
 
   def fetch_robots_txt(site)
-    body =
-      begin
-        @http_get.call(site + 'robots.txt')
-      rescue => e
-        if e.is_a?(Net::HTTPExceptions) && e.response.is_a?(Net::HTTPNotFound)
-          ''
-        else
-          nil
-        end
-      end and @parser.parse(body, site)
-  end
-
-  def cache_robots_txt(site, &block)
-    if @robotstxt.key?(site)
-      @robotstxt[site]
-    else
-      @robotstxt[site] = block.call(site)
+    begin
+      body = @http_get.call(site + 'robots.txt') or raise 'robots.txt unfetchable'
+    rescue => e
+      return RobotsTxt.unfetchable(site, e, @user_agent)
     end
+    @parser.parse!(body, site)
   end
 
   def http_get(uri)
@@ -143,6 +152,8 @@ Disallow: /
       when Net::HTTPRedirection
         referer = uri.to_s
         uri = URI(response['location'])
+      when Net::HTTPNotFound
+        return ''
       else
         response.value
       end

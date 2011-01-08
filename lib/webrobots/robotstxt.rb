@@ -27,8 +27,10 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
         @target = target
       end
 
-      def self.parse(input, target = nil)
-        new(target).parse(input)
+      def parse!(input, site)
+        parse(input, site)
+      rescue Error => e
+        RobotsTxt.new(site, nil, :error => e, :target => @target)
       end
 
       KNOWN_TOKENS = %w[User-agent Allow Disallow Crawl-delay Sitemap]
@@ -519,11 +521,12 @@ end
 end   # class Parser
 
     def initialize(site, records, options = nil)
-      super()
+      @timestamp = Time.now
       @site = site
       @options = options || {}
       @last_checked = nil
 
+      @error = @options[:error]
       @target = @options[:target]
       @sitemaps = @options[:sitemaps] || []
 
@@ -542,7 +545,12 @@ end   # class Parser
       end
     end
 
-    attr_reader :site, :sitemaps
+    attr_reader :timestamp, :site, :sitemaps
+    attr_accessor :error
+
+    def error!
+      raise @error if @error
+    end
 
     def target(user_agent = nil)
       if user_agent
@@ -577,6 +585,17 @@ end   # class Parser
     def options(user_agent = nil)
       record = find_record(user_agent) or return {}
       record.options
+    end
+
+    DISALLOW_ALL = <<-TXT
+User-Agent: *
+Disallow: /
+    TXT
+
+    def self.unfetchable(site, reason, target = nil)
+      Parser.new(target).parse(DISALLOW_ALL, site).tap { |robots_txt|
+        robots_txt.error = reason
+      }
     end
 
     class Record
