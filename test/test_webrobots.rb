@@ -85,6 +85,46 @@ Disallow: /2heavy/
 Allow: /2heavy/*.htm
 Disallow: /2heavy/*.htm$
           TXT
+        when 'http://koster1.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /tmp
+          TXT
+        when 'http://koster2.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /tmp/
+          TXT
+        when 'http://koster3.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /a%3cd.html
+          TXT
+        when 'http://koster4.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /a%3Cd.html
+          TXT
+        when 'http://koster5.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /a%2fb.html
+          TXT
+        when 'http://koster6.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /a/b.html
+          TXT
+        when 'http://koster7.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /%7ejoe/index.html
+          TXT
+        when 'http://koster8.example.net/robots.txt'
+          <<-'TXT'
+User-Agent: *
+Disallow: /~joe/index.html
+          TXT
         else
           raise "#{uri} is not supposed to be fetched"
         end
@@ -125,6 +165,32 @@ Disallow: /2heavy/*.htm$
       assert !@robots.allowed?('http://www.example.com/2heavy/index.php')
       assert !@robots.allowed?('http://www.example.com/2heavy/index.html')
       assert !@robots.allowed?('http://www.example.com/2heavy/index.htm')
+    end
+
+    should "follow what is said in Koster's draft" do
+      assert  @robots.disallowed?('http://koster1.example.net/tmp')
+      assert  @robots.disallowed?('http://koster1.example.net/tmp.html')
+      assert  @robots.disallowed?('http://koster1.example.net/tmp/a.html')
+
+      assert !@robots.disallowed?('http://koster2.example.net/tmp')
+      assert  @robots.disallowed?('http://koster2.example.net/tmp/')
+      assert  @robots.disallowed?('http://koster2.example.net/tmp/a.html')
+
+      assert  @robots.disallowed?('http://koster3.example.net/a%3cd.html')
+      assert  @robots.disallowed?('http://koster3.example.net/a%3Cd.html')
+
+      assert  @robots.disallowed?('http://koster4.example.net/a%3cd.html')
+      assert  @robots.disallowed?('http://koster4.example.net/a%3Cd.html')
+
+      assert  @robots.disallowed?('http://koster5.example.net/a%2fb.html')
+      assert !@robots.disallowed?('http://koster5.example.net/a/b.html')
+
+      assert !@robots.disallowed?('http://koster6.example.net/a%2fb.html')
+      assert  @robots.disallowed?('http://koster6.example.net/a/b.html')
+
+      assert  @robots.disallowed?('http://koster7.example.net/~joe/index.html')
+
+      assert  @robots.disallowed?('http://koster8.example.net/%7Ejoe/index.html')
     end
   end
 

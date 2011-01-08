@@ -676,7 +676,9 @@ end   # class Parser
       end
 
       def match?(request_uri)
-        !@empty && !!@pattern.match(request_uri)
+        return false if @empty
+        transformed = request_uri.gsub(/(%2[fF])|%([0-9a-f]{2})/i) { $1 || '%c' % $2.to_i(16) }
+        !!@pattern.match(transformed)
       end
     end
 
