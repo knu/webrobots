@@ -176,8 +176,12 @@ Disallow: /~joe/index.html
     should "properly restrict access" do
       assert  @robots_good.allowed?('http://www.example.org/index.html')
       assert !@robots_good.allowed?('http://www.example.org/2heavy/index.php')
+      assert  @robots_good.allowed?('http://www.example.org/2HEAVY/index.php')
+      assert !@robots_good.allowed?(URI('http://www.example.org/2heavy/index.php'))
       assert  @robots_good.allowed?('http://www.example.org/2heavy/index.html')
+      assert  @robots_good.allowed?('http://WWW.Example.Org/2heavy/index.html')
       assert !@robots_good.allowed?('http://www.example.org/2heavy/index.htm')
+      assert !@robots_good.allowed?('http://WWW.Example.Org/2heavy/index.htm')
 
       assert !@robots_evil.allowed?('http://www.example.org/index.html')
       assert !@robots_evil.allowed?('http://www.example.org/2heavy/index.php')
