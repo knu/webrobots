@@ -668,7 +668,7 @@ end   # class Parser
             re_src << '\z'
             break
           else
-            raise ParseError, 'unexpected characters: %s' % s.check(/.*/)
+            re_src << Regexp.quote(s.scan(/./))
           end
         end
         @pattern = Regexp.new(re_src, Regexp::MULTILINE)
