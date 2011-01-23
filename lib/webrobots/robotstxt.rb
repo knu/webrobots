@@ -283,7 +283,7 @@ Racc_token_to_s_table = [
   "opt_blanklines",
   "body",
   "@1",
-  "blocks",
+  "records",
   "blanklines",
   "blankline",
   "eol",

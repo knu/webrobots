@@ -15,7 +15,7 @@ rule
 			  }
 
   body			:
-			| blocks
+			| records
 			  opt_blanklines
 
   opt_blanklines	:
@@ -48,7 +48,7 @@ rule
 			    @sitemaps << val[3]
 			  }
 
-  blocks		: record
+  records		: record
 			  {
 			    result = []
 			    result << val[0]
@@ -57,13 +57,13 @@ rule
 			  {
 			    result = []
 			  }
-			| blocks
+			| records
 			  blanklines
 			  record
 			  {
 			    result << val[2]
 			  }
-			| blocks
+			| records
 			  blanklines
 			  rulelines
 			  {
@@ -72,7 +72,7 @@ rule
 			        [@site.to_s, @rulelinenos[i], line.token] if $VERBOSE
 			    }
 			  }
-			| blocks
+			| records
 			  blanklines
 			  commentblock
 
