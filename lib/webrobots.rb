@@ -1,6 +1,7 @@
 require 'webrobots/robotstxt'
 require 'uri'
 require 'net/https'
+require 'thread'
 if defined?(Nokogiri)
   require 'webrobots/nokogiri'
 else
@@ -19,6 +20,7 @@ class WebRobots
   def initialize(user_agent, options = nil)
     @user_agent = user_agent
     @parser = RobotsTxt::Parser.new(user_agent)
+    @parser_mutex = Mutex.new
 
     options ||= {}
     @http_get = options[:http_get] || method(:http_get)
@@ -133,7 +135,9 @@ class WebRobots
     rescue => e
       return RobotsTxt.unfetchable(site, e, @user_agent)
     end
-    @parser.parse!(body, site)
+    @parser_mutex.synchronize {
+      @parser.parse!(body, site)
+    }
   end
 
   def http_get(uri)
