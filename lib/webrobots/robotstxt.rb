@@ -37,7 +37,7 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
       RE_KNOWN_TOKENS = /\A(#{KNOWN_TOKENS.map { |t| Regexp.quote(t) }.join('|')})\z/i
 
       def parse(input, site)
-        @q = []
+        @q ||= []
         @errors = []
         @lineno = 1
         @site = site
@@ -91,6 +91,8 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
         do_parse
       rescue Racc::ParseError => e
         raise ParseError, e.message
+      ensure
+        @q.clear
       end
 
       def next_token
