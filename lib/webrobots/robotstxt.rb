@@ -34,7 +34,7 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
       end
 
       KNOWN_TOKENS = %w[User-agent Allow Disallow Crawl-delay Sitemap]
-      RE_KNOWN_TOKENS = /#{KNOWN_TOKENS.join('|')}/i
+      RE_KNOWN_TOKENS = /\A(#{KNOWN_TOKENS.map { |t| Regexp.quote(t) }.join('|')})\z/i
 
       def parse(input, site)
         @q = []
@@ -71,14 +71,15 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
                 parse_error @lineno, "unexpected characters: %s" % s.check(/.*/)
               end
               value_expected = false
-            else
-              if t = s.scan(RE_KNOWN_TOKENS)
+            elsif t = s.scan(/[^\x00-\x1f\x7f()<>@,;:\\"\/\[\]?={}]+/)
+              case t
+              when RE_KNOWN_TOKENS
                 @q << [t.downcase, t]
-              elsif t = s.scan(/[^\x00-\x1f\x7f()<>@,;:\\"\/\[\]?={}]+/)
-                @q << [:TOKEN, t]
               else
-                parse_error "unexpected characters: %s" % s.check(/.*/)
+                @q << [:TOKEN, t]
               end
+            else
+              parse_error "unexpected characters: %s" % s.check(/.*/)
             end
           end
         end

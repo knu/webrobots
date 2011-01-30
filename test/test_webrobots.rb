@@ -89,6 +89,7 @@ class TestWebRobots < Test::Unit::TestCase
 # Punish evil bots
 User-Agent: evil
 Disallow: /
+Disallow-Not: /	# parser teaser
 
 User-Agent: good
 # Be generous to good bots
@@ -172,7 +173,9 @@ Disallow: /~joe/index.html
     end
 
     should "properly restrict access" do
-      assert  @robots_good.allowed?('http://www.example.org/index.html')
+      assert_nothing_raised {
+        assert  @robots_good.allowed?('http://www.example.org/index.html')
+      }
       assert !@robots_good.allowed?('http://www.example.org/2heavy/index.php')
       assert  @robots_good.allowed?('http://www.example.org/2HEAVY/index.php')
       assert !@robots_good.allowed?(URI('http://www.example.org/2heavy/index.php'))
