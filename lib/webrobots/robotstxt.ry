@@ -150,7 +150,6 @@ rule
 ---- header
 
 require 'strscan'
-require 'uri'
 
 class WebRobots
   class Error < StandardError

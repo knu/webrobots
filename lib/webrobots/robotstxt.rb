@@ -8,7 +8,6 @@ require 'racc/parser.rb'
 
 
 require 'strscan'
-require 'uri'
 
 class WebRobots
   class Error < StandardError
