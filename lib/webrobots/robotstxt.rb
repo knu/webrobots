@@ -19,7 +19,7 @@ class WebRobots
   class RobotsTxt
 class Parser < Racc::Parser
 
-module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 164)
+module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 163)
 
       def initialize(target = nil)
         super()
@@ -616,12 +616,8 @@ Disallow: /
             @options[ruleline.token.downcase] = ruleline.value
           end
         }
-        @acls.sort! { |a, b|
-          [
-            b.value.length, b.is_a?(AllowLine) ? 1 : 0
-          ] <=> [
-            a.value.length, a.is_a?(AllowLine) ? 1 : 0
-          ]
+        @acls.replace @acls.sort_by { |x|
+          [-x.value.length, x.is_a?(AllowLine) ? -1 : 0]
         }
       end
 
