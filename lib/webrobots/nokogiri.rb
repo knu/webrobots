@@ -24,8 +24,8 @@ class Nokogiri::HTML::Document
 
   def parse_meta_robots(custom_name)
     pattern = /\A#{Regexp.quote(custom_name)}\z/i
-    meta = css('meta[@name]').find { |meta|
-      meta['name'].match(pattern)
+    meta = css('meta[@name]').find { |element|
+      element['name'].match(pattern)
     } and content = meta['content'] or return []
     content.downcase.split(/[,\s]+/)
   end
