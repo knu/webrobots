@@ -117,6 +117,7 @@ class WebRobots
 
   def evaluate(url)
     site, request_uri = split_uri(url)
+    return nil, request_uri if request_uri == '/robots.txt'
     return get_robots_txt(site), request_uri
   end
 

@@ -517,4 +517,32 @@ Disallow: /
       assert  @doc.meta_robots('googlebot').include?('noarchive')
     end
   end
+  
+  class Agent
+    def initialize
+      @robots = WebRobots.new 'agent', :http_get => method(:get)
+    end
+
+    def get uri
+      @robots.allowed? uri
+
+      if uri.request_uri == '/robots.txt' then
+        ''
+      else
+        'content'
+      end
+    end
+  end
+
+  context "embedded in a user-agent" do
+    setup do
+      @agent = Agent.new
+    end
+
+    should "fetch robots.txt" do
+      body = @agent.get URI.parse 'http://example/robots.html'
+
+      assert_equal 'content', body
+    end
+  end
 end
