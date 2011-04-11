@@ -24,7 +24,6 @@ This library helps write robots.txt compliant web robots in Ruby.
   # Include your dependencies below. Runtime dependencies are required when using your gem,
   # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
   #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
-  gem.add_development_dependency 'racc'
 end
 Jeweler::RubygemsDotOrgTasks.new
 
