@@ -41,8 +41,9 @@ class WebRobots
   # a relative URI or a non-HTTP/HTTPS URI is given, ArgumentError is
   # raised.
   def allowed?(url)
-    robots_txt, request_uri = evaluate(url)
+    site, request_uri = split_uri(url)
     return true if request_uri == '/robots.txt'
+    robots_txt = get_robots_txt(site)
     robots_txt.allow?(request_uri)
   end
 
@@ -113,11 +114,6 @@ class WebRobots
     end
     site.path = '/'
     return site, request_uri
-  end
-
-  def evaluate(url)
-    site, request_uri = split_uri(url)
-    return get_robots_txt(site), request_uri
   end
 
   def robots_txt_for(url)
