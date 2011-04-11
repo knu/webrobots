@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{webrobots}
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Akinori MUSHA"]
-  s.date = %q{2011-02-01}
+  s.date = %q{2011-04-11}
   s.description = %q{This library helps write robots.txt compliant web robots in Ruby.
 }
   s.email = %q{knu@idaemons.org}
@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   ]
   s.licenses = ["2-clause BSDL"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.4.2}
+  s.rubygems_version = %q{1.6.2}
   s.summary = %q{A Ruby library to help write robots.txt compliant web robots}
   s.test_files = [
     "test/helper.rb",
