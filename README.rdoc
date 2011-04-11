@@ -18,8 +18,13 @@ This is a library to help write robots.txt compliant web robots.
   body = Net::HTTP.get(uri)
   # ...
 
+== Requirements
+
+- Ruby 1.8.7 or 1.9.2+
+- Nokogiri 1.4.4+
+
 == Contributing to webrobots
- 
+
 * Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
 * Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
 * Fork the project
