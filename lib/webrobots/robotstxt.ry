@@ -186,7 +186,7 @@ class WebRobots
         value_expected = false
 
         until s.eos?
-          if t = s.scan(/[ \t]*\r?\n/)
+          if t = s.scan(/[ \t]*(?:\r?\n|\z)/)
             if value_expected
               @q << [:VALUE, '']
             end

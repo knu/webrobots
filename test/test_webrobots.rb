@@ -545,4 +545,41 @@ Disallow: /
       assert_equal 'content', body
     end
   end
+
+  context "robots.txt with a space at the end of the last line" do
+    setup do
+      @robots = WebRobots.new('RandomBot', :http_get => lambda { |uri|
+        res = case uri.to_s
+          when 'http://site1.example.com/robots.txt'
+          <<-'TXT'
+User-agent: *
+Request-rate: 1/30
+Disallow: /util/
+
+Sitemap: http://site1.example.com/text/sitemap.xml
+ 
+TXT
+        when 'http://site2.example.com/robots.txt'
+          <<-'TXT'
+User-agent: *
+Request-rate: 1/30
+Disallow: /util/
+
+Sitemap: http://site2.example.com/text/sitemap.xml 
+TXT
+        else
+          raise "#{uri} is not supposed to be fetched"
+        end
+        # This chomp is actually key to the test.  Remove the final EOL.
+        # The final line should be the one ending with the space.
+        res.chomp
+      })
+    end
+
+    should "be properly parsed" do
+      assert_equal(["http://site1.example.com/text/sitemap.xml"], @robots.sitemaps("http://site1.example.com/"))
+      assert_equal(["http://site2.example.com/text/sitemap.xml"], @robots.sitemaps("http://site2.example.com/"))
+    end
+  end
+
 end
