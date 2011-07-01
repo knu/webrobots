@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{webrobots}
-  s.version = "0.0.9"
+  s.version = "0.0.10"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Akinori MUSHA"]
-  s.date = %q{2011-04-11}
+  s.authors = [%q{Akinori MUSHA}]
+  s.date = %q{2011-07-01}
   s.description = %q{This library helps write robots.txt compliant web robots in Ruby.
 }
   s.email = %q{knu@idaemons.org}
@@ -33,14 +33,10 @@ Gem::Specification.new do |s|
     "test/test_webrobots.rb",
     "webrobots.gemspec"
   ]
-  s.licenses = ["2-clause BSDL"]
-  s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.6.2}
+  s.licenses = [%q{2-clause BSDL}]
+  s.require_paths = [%q{lib}]
+  s.rubygems_version = %q{1.8.5}
   s.summary = %q{A Ruby library to help write robots.txt compliant web robots}
-  s.test_files = [
-    "test/helper.rb",
-    "test/test_webrobots.rb"
-  ]
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
@@ -50,14 +46,14 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<racc>, [">= 0"])
       s.add_development_dependency(%q<shoulda>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.5.1"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.6.2"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
     else
       s.add_dependency(%q<nokogiri>, [">= 1.4.4"])
       s.add_dependency(%q<racc>, [">= 0"])
       s.add_dependency(%q<shoulda>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-      s.add_dependency(%q<jeweler>, ["~> 1.5.1"])
+      s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
       s.add_dependency(%q<rcov>, [">= 0"])
     end
   else
@@ -65,7 +61,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<racc>, [">= 0"])
     s.add_dependency(%q<shoulda>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1.0.0"])
-    s.add_dependency(%q<jeweler>, ["~> 1.5.1"])
+    s.add_dependency(%q<jeweler>, ["~> 1.6.2"])
     s.add_dependency(%q<rcov>, [">= 0"])
   end
 end
