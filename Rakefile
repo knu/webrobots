@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require 'rubygems'
 require 'bundler'
 begin
@@ -21,9 +23,7 @@ This library helps write robots.txt compliant web robots in Ruby.
   EOS
   gem.email = "knu@idaemons.org"
   gem.authors = ["Akinori MUSHA"]
-  # Include your dependencies below. Runtime dependencies are required when using your gem,
-  # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
-  #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
+  # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
 
@@ -39,6 +39,7 @@ Rcov::RcovTask.new do |test|
   test.libs << 'test'
   test.pattern = 'test/**/test_*.rb'
   test.verbose = true
+  test.rcov_opts << '--exclude "gems/*"'
 end
 
 task :default => :test
