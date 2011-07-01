@@ -27,7 +27,7 @@ rule
 
   blankline		: eol
 
-  eol			: EOL
+  eol			: opt_space EOL
 			  {
 			    @lineno += 1
 			  }
@@ -76,7 +76,7 @@ rule
 			  blanklines
 			  commentblock
 
-  commentblock		: commentlines
+  commentblock		: commentlines opt_space
 
   record		: opt_commentlines
 			  agentlines
