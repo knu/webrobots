@@ -19,7 +19,7 @@ class WebRobots
   class RobotsTxt
 class Parser < Racc::Parser
 
-module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 163)
+module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 158)
 
       def initialize(target = nil)
         super()
@@ -38,7 +38,7 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 163)
       def parse(input, site)
         @q ||= []
         @errors = []
-        @lineno = 1
+        @lineno = 0
         @site = site
 
         string = input.respond_to?(:read) ? input.read : input
@@ -46,6 +46,7 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 163)
         value_expected = false
 
         until s.eos?
+          @lineno += 1 if s.bol?
           if t = s.scan(/[ \t]*(?:\r?\n|\z)/)
             if value_expected
               @q << [:VALUE, '']
@@ -115,70 +116,70 @@ module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 163)
 ##### State transition tables begin ###
 
 racc_action_table = [
-     6,    13,   -11,    17,    53,     6,   -13,    37,    38,    39,
-    40,    13,   -11,    17,    47,    28,    28,    37,    38,    39,
-    40,    13,   -11,    17,    50,    51,    52,    37,    38,    39,
-    40,    13,   -11,    17,    13,    54,    25,    37,    38,    39,
-    40,    13,   -11,    17,    13,    13,   -13,    13,   -11,    17,
-     6,    13,   -14,    17,     6,    13,    13,    17,     6,    13,
-    13,    17,     6,    13,    13,    17,     6,    13,    24,    17,
-     6,    13,    63,    17,    64,    65,    66,    67,     6,    10,
-     6,     7,     6 ]
+     5,    12,   -10,    16,    52,    40,   -12,    36,    37,    38,
+    39,    12,   -10,    16,    46,    27,    27,    36,    37,    38,
+    39,    12,   -10,    16,    49,    50,    51,    36,    37,    38,
+    39,    12,   -10,    16,    12,    53,    24,    36,    37,    38,
+    39,    12,   -10,    16,    12,    12,   -12,    12,   -10,    16,
+    60,    12,   -13,    16,    60,    12,    12,    16,    60,    12,
+    12,    16,    60,    12,    12,    16,    60,    12,    23,    16,
+    60,    12,    62,    16,    63,    64,    65,    66,     5,     9,
+     5,     6,     5 ]
 
 racc_action_check = [
-    22,    22,    22,    22,    40,    24,    22,    22,    22,    22,
-    22,    26,    26,    26,    28,    20,    26,    26,    26,    26,
-    26,    46,    46,    46,    37,    38,    39,    46,    46,    46,
-    46,    30,    30,    30,    25,    42,    17,    30,    30,    30,
-    30,     8,     8,     8,    47,    50,     8,    14,    14,    14,
-    63,    63,    14,    63,    54,    54,    51,    54,    64,    64,
-    52,    64,    65,    65,    53,    65,    66,    66,    16,    66,
-    67,    67,    55,    67,    56,    57,    58,    59,    12,     7,
+    21,    21,    21,    21,    39,    23,    21,    21,    21,    21,
+    21,    25,    25,    25,    27,    19,    25,    25,    25,    25,
+    25,    45,    45,    45,    36,    37,    38,    45,    45,    45,
+    45,    29,    29,    29,    24,    41,    16,    29,    29,    29,
+    29,     7,     7,     7,    46,    49,     7,    13,    13,    13,
+    62,    62,    13,    62,    53,    53,    50,    53,    63,    63,
+    51,    63,    64,    64,    52,    64,    65,    65,    15,    65,
+    66,    66,    54,    66,    55,    56,    57,    58,    11,     6,
      3,     1,     0 ]
 
 racc_action_pointer = [
-    80,    81,   nil,    78,   nil,   nil,   nil,    79,    38,   nil,
-   nil,   nil,    76,   nil,    44,   nil,    64,    30,   nil,   nil,
-     7,   nil,    -2,   nil,     3,    31,     8,   nil,     8,   nil,
-    28,   nil,   nil,   nil,   nil,   nil,   nil,    18,    19,    20,
-    -2,   nil,    28,   nil,   nil,   nil,    18,    41,   nil,   nil,
-    42,    53,    57,    61,    52,    65,    67,    68,    69,    70,
-   nil,   nil,   nil,    48,    56,    60,    64,    68,   nil,   nil,
-   nil,   nil,   nil ]
+    80,    81,   nil,    78,   nil,   nil,    79,    38,   nil,   nil,
+   nil,    76,   nil,    44,   nil,    64,    30,   nil,   nil,     7,
+   nil,    -2,   nil,     3,    31,     8,   nil,     8,   nil,    28,
+   nil,   nil,   nil,   nil,   nil,   nil,    18,    19,    20,    -2,
+   nil,    28,   nil,   nil,   nil,    18,    41,   nil,   nil,    42,
+    53,    57,    61,    52,    65,    67,    68,    69,    70,   nil,
+   nil,   nil,    48,    56,    60,    64,    68,   nil,   nil,   nil,
+   nil,   nil ]
 
 racc_action_default = [
-    -5,   -45,    -1,    -6,    -7,    -9,   -10,   -45,    -3,    -8,
-    73,    -2,    -5,   -12,   -24,   -15,   -45,   -45,   -19,   -20,
-   -45,    -4,    -6,   -16,   -45,   -11,   -30,   -26,   -45,   -21,
-   -22,   -23,   -32,   -35,   -36,   -37,   -38,   -45,   -45,   -45,
-   -45,   -17,   -45,   -25,   -27,   -28,   -31,   -11,   -33,   -34,
-   -11,   -11,   -11,   -11,   -11,   -45,   -45,   -45,   -45,   -45,
-   -18,   -43,   -44,   -11,   -11,   -11,   -11,   -11,   -29,   -39,
-   -40,   -41,   -42 ]
+    -5,   -44,    -1,    -6,    -7,    -9,   -44,    -3,    -8,    72,
+    -2,    -5,   -11,   -23,   -14,   -44,   -44,   -18,   -19,   -44,
+    -4,    -6,   -15,   -44,   -10,   -29,   -25,   -44,   -20,   -21,
+   -22,   -31,   -34,   -35,   -36,   -37,   -44,   -44,   -44,   -44,
+   -16,   -44,   -24,   -26,   -27,   -30,   -10,   -32,   -33,   -10,
+   -10,   -10,   -10,   -10,   -44,   -44,   -44,   -44,   -44,   -17,
+   -42,   -43,   -10,   -10,   -10,   -10,   -10,   -28,   -38,   -39,
+   -40,   -41 ]
 
 racc_goto_table = [
-    15,    42,     9,    48,     3,    12,    23,    11,     5,    27,
-    18,     5,    26,     2,    15,    44,    22,    19,    45,    48,
-     5,     9,    49,    55,    29,    21,    56,    57,    58,    59,
-     5,    31,    41,    60,    43,    30,     8,     1,    49,    46,
-   nil,   nil,    68,    69,    70,    71,    72 ]
+    14,    41,     8,    47,     3,     2,    22,    17,    29,    11,
+    18,    26,    45,    10,    14,    21,    20,    43,    44,    47,
+     8,    28,    48,    54,    30,    25,    55,    56,    57,    58,
+    59,    42,     7,     1,   nil,   nil,   nil,   nil,    48,    67,
+    68,    69,    70,    71 ]
 
 racc_goto_check = [
-    12,     9,     7,    20,     6,     5,    12,     3,     8,    19,
-    14,     8,    17,     2,    12,    19,     6,    15,    12,    20,
-     8,     7,    12,     9,    14,     2,     9,     9,     9,     9,
-     8,    15,     8,    13,    18,    16,     4,     1,    12,    16,
-   nil,   nil,    13,    13,    13,    13,    13 ]
+    11,     8,     7,    19,     6,     2,    11,    13,    15,     5,
+    14,    18,    15,     3,    11,     6,     2,    18,    11,    19,
+     7,    13,    11,     8,    14,    16,     8,     8,     8,     8,
+    12,    17,     4,     1,   nil,   nil,   nil,   nil,    11,    12,
+    12,    12,    12,    12 ]
 
 racc_goto_pointer = [
-   nil,    37,    13,    -1,    34,    -3,     4,    -1,     8,   -24,
-   nil,   nil,    -8,   -21,     2,     9,    13,    -8,     8,   -11,
-   -27,   nil,   nil,   nil,   nil ]
+   nil,    33,     5,     6,    30,     2,     4,    -1,   -23,   nil,
+   nil,    -7,   -23,     0,     3,   -13,     6,     6,    -8,   -26,
+   nil,   nil,   nil,   nil ]
 
 racc_goto_default = [
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,     4,    61,    16,
-    20,    14,    62,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-    32,    33,    34,    35,    36 ]
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,     4,    15,    19,
+    13,    61,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    31,
+    32,    33,    34,    35 ]
 
 racc_reduce_table = [
   0, 0, :racc_error,
@@ -191,45 +192,44 @@ racc_reduce_table = [
   1, 19, :_reduce_none,
   2, 19, :_reduce_none,
   1, 20, :_reduce_none,
-  1, 21, :_reduce_10,
+  0, 21, :_reduce_none,
+  1, 21, :_reduce_none,
   0, 22, :_reduce_none,
   1, 22, :_reduce_none,
-  0, 23, :_reduce_none,
   1, 23, :_reduce_none,
-  1, 24, :_reduce_none,
-  2, 24, :_reduce_none,
-  3, 25, :_reduce_none,
-  5, 25, :_reduce_18,
+  2, 23, :_reduce_none,
+  3, 24, :_reduce_none,
+  5, 24, :_reduce_17,
+  1, 18, :_reduce_18,
   1, 18, :_reduce_19,
-  1, 18, :_reduce_20,
+  3, 18, :_reduce_20,
   3, 18, :_reduce_21,
-  3, 18, :_reduce_22,
   3, 18, :_reduce_none,
-  1, 28, :_reduce_none,
-  3, 27, :_reduce_25,
-  1, 30, :_reduce_26,
-  2, 30, :_reduce_27,
-  2, 30, :_reduce_none,
-  5, 32, :_reduce_29,
-  0, 31, :_reduce_none,
-  1, 31, :_reduce_none,
-  1, 29, :_reduce_32,
-  2, 29, :_reduce_33,
+  1, 27, :_reduce_none,
+  3, 26, :_reduce_24,
+  1, 29, :_reduce_25,
+  2, 29, :_reduce_26,
   2, 29, :_reduce_none,
-  1, 33, :_reduce_none,
-  1, 33, :_reduce_none,
-  1, 33, :_reduce_none,
-  1, 33, :_reduce_none,
+  5, 31, :_reduce_28,
+  0, 30, :_reduce_none,
+  1, 30, :_reduce_none,
+  1, 28, :_reduce_31,
+  2, 28, :_reduce_32,
+  2, 28, :_reduce_none,
+  1, 32, :_reduce_none,
+  1, 32, :_reduce_none,
+  1, 32, :_reduce_none,
+  1, 32, :_reduce_none,
+  5, 33, :_reduce_38,
   5, 34, :_reduce_39,
   5, 35, :_reduce_40,
   5, 36, :_reduce_41,
-  5, 37, :_reduce_42,
-  1, 26, :_reduce_none,
-  1, 26, :_reduce_none ]
+  1, 25, :_reduce_none,
+  1, 25, :_reduce_none ]
 
-racc_reduce_n = 45
+racc_reduce_n = 44
 
-racc_shift_n = 73
+racc_shift_n = 72
 
 racc_token_table = {
   false => 0,
@@ -288,7 +288,6 @@ Racc_token_to_s_table = [
   "records",
   "blanklines",
   "blankline",
-  "eol",
   "opt_space",
   "opt_commentlines",
   "commentlines",
@@ -344,13 +343,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 11)
 
 # reduce 9 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 31)
-  def _reduce_10(val, _values, result)
-    			    @lineno += 1
-			  
-    result
-  end
-.,.,
+# reduce 10 omitted
 
 # reduce 11 omitted
 
@@ -364,11 +357,18 @@ module_eval(<<'.,.,', 'robotstxt.ry', 31)
 
 # reduce 16 omitted
 
-# reduce 17 omitted
+module_eval(<<'.,.,', 'robotstxt.ry', 42)
+  def _reduce_17(val, _values, result)
+    			    @sitemaps << val[3]
+			  
+    result
+  end
+.,.,
 
 module_eval(<<'.,.,', 'robotstxt.ry', 47)
   def _reduce_18(val, _values, result)
-    			    @sitemaps << val[3]
+    			    result = []
+			    result << val[0]
 			  
     result
   end
@@ -377,30 +377,21 @@ module_eval(<<'.,.,', 'robotstxt.ry', 47)
 module_eval(<<'.,.,', 'robotstxt.ry', 52)
   def _reduce_19(val, _values, result)
     			    result = []
-			    result << val[0]
 			  
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 57)
+module_eval(<<'.,.,', 'robotstxt.ry', 58)
   def _reduce_20(val, _values, result)
-    			    result = []
-			  
-    result
-  end
-.,.,
-
-module_eval(<<'.,.,', 'robotstxt.ry', 63)
-  def _reduce_21(val, _values, result)
     			    result << val[2]
 			  
     result
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 69)
-  def _reduce_22(val, _values, result)
+module_eval(<<'.,.,', 'robotstxt.ry', 64)
+  def _reduce_21(val, _values, result)
     			    val[2].each_with_index { |line, i|
 			      warn "%s line %d: %s: orphan rule line" %
 			        [@site.to_s, @rulelinenos[i], line.token] if $VERBOSE
@@ -410,13 +401,21 @@ module_eval(<<'.,.,', 'robotstxt.ry', 69)
   end
 .,.,
 
+# reduce 22 omitted
+
 # reduce 23 omitted
 
-# reduce 24 omitted
+module_eval(<<'.,.,', 'robotstxt.ry', 79)
+  def _reduce_24(val, _values, result)
+    			    result = Record.new(val[1], val[2])
+			  
+    result
+  end
+.,.,
 
 module_eval(<<'.,.,', 'robotstxt.ry', 84)
   def _reduce_25(val, _values, result)
-    			    result = Record.new(val[1], val[2])
+    			    result = [val[0]]
 			  
     result
   end
@@ -424,36 +423,28 @@ module_eval(<<'.,.,', 'robotstxt.ry', 84)
 
 module_eval(<<'.,.,', 'robotstxt.ry', 89)
   def _reduce_26(val, _values, result)
-    			    result = [val[0]]
-			  
-    result
-  end
-.,.,
-
-module_eval(<<'.,.,', 'robotstxt.ry', 94)
-  def _reduce_27(val, _values, result)
     			    result << val[1]
 			  
     result
   end
 .,.,
 
-# reduce 28 omitted
+# reduce 27 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 101)
-  def _reduce_29(val, _values, result)
+module_eval(<<'.,.,', 'robotstxt.ry', 96)
+  def _reduce_28(val, _values, result)
     			    result = AgentLine.new(val[0], val[3])
 			  
     result
   end
 .,.,
 
+# reduce 29 omitted
+
 # reduce 30 omitted
 
-# reduce 31 omitted
-
-module_eval(<<'.,.,', 'robotstxt.ry', 109)
-  def _reduce_32(val, _values, result)
+module_eval(<<'.,.,', 'robotstxt.ry', 104)
+  def _reduce_31(val, _values, result)
     			    result = [result]
 			    @rulelinenos = []
 			  
@@ -461,14 +452,16 @@ module_eval(<<'.,.,', 'robotstxt.ry', 109)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 115)
-  def _reduce_33(val, _values, result)
+module_eval(<<'.,.,', 'robotstxt.ry', 110)
+  def _reduce_32(val, _values, result)
     			    result << val[1]
 			    @rulelinenos << @lineno
 			  
     result
   end
 .,.,
+
+# reduce 33 omitted
 
 # reduce 34 omitted
 
@@ -478,11 +471,17 @@ module_eval(<<'.,.,', 'robotstxt.ry', 115)
 
 # reduce 37 omitted
 
-# reduce 38 omitted
+module_eval(<<'.,.,', 'robotstxt.ry', 123)
+  def _reduce_38(val, _values, result)
+    			    result = AllowLine.new(val[0], val[3])
+			  
+    result
+  end
+.,.,
 
 module_eval(<<'.,.,', 'robotstxt.ry', 128)
   def _reduce_39(val, _values, result)
-    			    result = AllowLine.new(val[0], val[3])
+    			    result = DisallowLine.new(val[0], val[3])
 			  
     result
   end
@@ -490,7 +489,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 128)
 
 module_eval(<<'.,.,', 'robotstxt.ry', 133)
   def _reduce_40(val, _values, result)
-    			    result = DisallowLine.new(val[0], val[3])
+    			    result = CrawlDelayLine.new(val[0], val[3])
 			  
     result
   end
@@ -498,23 +497,15 @@ module_eval(<<'.,.,', 'robotstxt.ry', 133)
 
 module_eval(<<'.,.,', 'robotstxt.ry', 138)
   def _reduce_41(val, _values, result)
-    			    result = CrawlDelayLine.new(val[0], val[3])
-			  
-    result
-  end
-.,.,
-
-module_eval(<<'.,.,', 'robotstxt.ry', 143)
-  def _reduce_42(val, _values, result)
     			    result = ExtentionLine.new(val[0], val[3])
 			  
     result
   end
 .,.,
 
-# reduce 43 omitted
+# reduce 42 omitted
 
-# reduce 44 omitted
+# reduce 43 omitted
 
 def _reduce_none(val, _values, result)
   val[0]
