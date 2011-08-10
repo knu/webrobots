@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'helper'
 
 class TestWebRobots < Test::Unit::TestCase
@@ -582,4 +583,76 @@ TXT
     end
   end
 
+  context "robots.txt cache" do
+    setup do
+      @fetched = false
+      @robots = WebRobots.new('RandomBot', :http_get => lambda { |uri|
+          case uri.to_s
+          when 'http://site1.example.org/robots.txt'
+            @fetched = true
+            <<-'TXT'
+User-Agent: *
+Disallow: /foo
+TXT
+          when 'http://site2.example.org/robots.txt'
+            @fetched = true
+            nil
+          end
+        })
+    end
+
+    should "persist unless cache is cleared" do
+      assert !@fetched
+      assert !@robots.allowed?('http://site1.example.org/foo')
+      assert  @fetched
+
+      @fetched = false
+      assert  @robots.allowed?('http://site1.example.org/bar')
+      assert !@fetched
+      assert  @robots.allowed?('http://site1.example.org/baz')
+      assert !@fetched
+      assert !@robots.allowed?('http://site1.example.org/foo')
+      assert !@fetched
+
+      @robots.flush_cache
+      assert !@fetched
+      assert !@robots.allowed?('http://site1.example.org/foo')
+      assert  @fetched
+
+      @fetched = false
+      assert  @robots.allowed?('http://site1.example.org/bar')
+      assert !@fetched
+      assert  @robots.allowed?('http://site1.example.org/baz')
+      assert !@fetched
+      assert !@robots.allowed?('http://site1.example.org/foo')
+      assert !@fetched
+    end
+
+    should "persist for non-existent robots.txt unless cache is cleared" do
+      assert !@fetched
+      assert !@robots.allowed?('http://site2.example.org/foo')
+      assert  @fetched
+
+      @fetched = false
+      assert !@robots.allowed?('http://site2.example.org/bar')
+      assert !@fetched
+      assert !@robots.allowed?('http://site2.example.org/baz')
+      assert !@fetched
+      assert !@robots.allowed?('http://site2.example.org/foo')
+      assert !@fetched
+
+      @robots.flush_cache
+      assert !@fetched
+      assert !@robots.allowed?('http://site2.example.org/foo')
+      assert  @fetched
+
+      @fetched = false
+      assert !@robots.allowed?('http://site2.example.org/bar')
+      assert !@fetched
+      assert !@robots.allowed?('http://site2.example.org/baz')
+      assert !@fetched
+      assert !@robots.allowed?('http://site2.example.org/foo')
+      assert !@fetched
+    end
+  end
 end

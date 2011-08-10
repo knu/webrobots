@@ -30,7 +30,12 @@ class WebRobots
 
   # :nodoc:
   def create_cache
-    Hash.new	# Must respond to [], []=, and delete.
+    Hash.new	# Must respond to [], []=, delete and clear.
+  end
+
+  # Flushes robots.txt cache.
+  def flush_cache
+    @robotstxt.clear
   end
 
   # Returns the robot name initially given.
