@@ -25,12 +25,7 @@ rule
 			| blanklines
 			  blankline
 
-  blankline		: eol
-
-  eol			: EOL
-			  {
-			    @lineno += 1
-			  }
+  blankline		: EOL
 
   opt_space		:
 			| SPACE
@@ -42,7 +37,7 @@ rule
 			| commentlines
 			  comment
 
-  comment		: opt_space COMMENT eol
+  comment		: opt_space COMMENT EOL
 			| 'sitemap' ':' opt_space VALUE eol_opt_comment
 			  {
 			    @sitemaps << val[3]
@@ -144,7 +139,7 @@ rule
 			    result = ExtentionLine.new(val[0], val[3])
 			  }
 
-  eol_opt_comment	: eol
+  eol_opt_comment	: EOL
 			| comment
 
 ---- header
@@ -178,7 +173,7 @@ class WebRobots
       def parse(input, site)
         @q ||= []
         @errors = []
-        @lineno = 1
+        @lineno = 0
         @site = site
 
         string = input.respond_to?(:read) ? input.read : input
@@ -186,6 +181,7 @@ class WebRobots
         value_expected = false
 
         until s.eos?
+          @lineno += 1 if s.bol?
           if t = s.scan(/[ \t]*(?:\r?\n|\z)/)
             if value_expected
               @q << [:VALUE, '']
