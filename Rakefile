@@ -15,7 +15,7 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "webrobots"
-#  gem.homepage = "http://github.com/knu/webrobots"
+  gem.homepage = "https://github.com/knu/webrobots"
   gem.license = "2-clause BSDL"
   gem.summary = %Q{A Ruby library to help write robots.txt compliant web robots}
   gem.description = <<-'EOS'
