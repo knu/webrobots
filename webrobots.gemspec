@@ -4,15 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{webrobots}
-  s.version = "0.0.11"
+  s.name = "webrobots"
+  s.version = "0.0.12"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = [%q{Akinori MUSHA}]
-  s.date = %q{2011-08-10}
-  s.description = %q{This library helps write robots.txt compliant web robots in Ruby.
-}
-  s.email = %q{knu@idaemons.org}
+  s.authors = ["Akinori MUSHA"]
+  s.date = "2011-09-26"
+  s.description = "This library helps write robots.txt compliant web robots in Ruby.\n"
+  s.email = "knu@idaemons.org"
   s.extra_rdoc_files = [
     "LICENSE.txt",
     "README.rdoc"
@@ -33,11 +32,11 @@ Gem::Specification.new do |s|
     "test/test_webrobots.rb",
     "webrobots.gemspec"
   ]
-  s.homepage = %q{https://github.com/knu/webrobots}
-  s.licenses = [%q{2-clause BSDL}]
-  s.require_paths = [%q{lib}]
-  s.rubygems_version = %q{1.8.7}
-  s.summary = %q{A Ruby library to help write robots.txt compliant web robots}
+  s.homepage = "https://github.com/knu/webrobots"
+  s.licenses = ["2-clause BSDL"]
+  s.require_paths = ["lib"]
+  s.rubygems_version = "1.8.10"
+  s.summary = "A Ruby library to help write robots.txt compliant web robots"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
