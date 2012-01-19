@@ -145,8 +145,12 @@ class WebRobots
     referer = nil
     10.times {
       http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = uri.is_a?(URI::HTTPS)
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      if http.use_ssl = uri.is_a?(URI::HTTPS)
+        http.verify_mode = OpenSSL::SSL::VERIFY_PEER
+        http.cert_store = OpenSSL::X509::Store.new.tap { |store|
+          store.set_default_paths
+        }
+      end
       header = { 'User-Agent' => @user_agent }
       header['Referer'] = referer if referer
       # header is destroyed by this in ruby 1.9.2!

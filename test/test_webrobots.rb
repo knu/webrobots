@@ -472,6 +472,7 @@ Disallow: /
     should "be parsed for major sites" do
       assert_nothing_raised {
         assert !@testbot.allowed?("http://www.google.com/search")
+        assert !@testbot.allowed?("https://www.google.com/search")
         assert !@testbot.allowed?("http://www.google.com/news/section?pz=1&cf=all&ned=jp&topic=y&ict=ln")
         assert @testbot.allowed?("http://www.google.com/news/directory?pz=1&cf=all&ned=us&hl=en&sort=users&category=6")
       }
