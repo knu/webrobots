@@ -597,7 +597,9 @@ Disallow: /
         @acls = []
         @delay = nil
         @options = {}
-        rulelines.each { |ruleline|
+        @rulelines = rulelines || []
+        
+        @rulelines.each { |ruleline|
           case ruleline
           when AccessControlLine
             @acls << ruleline

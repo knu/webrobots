@@ -656,4 +656,26 @@ TXT
       assert !@fetched
     end
   end
+  
+  context "robots.txt with just user-agent & sitemap and no blank line between them" do
+    setup do
+      @robots = WebRobots.new('RandomBot', :http_get => lambda { |uri|
+        res = case uri.to_s
+          when 'http://site1.example.com/robots.txt'
+          <<-'TXT'
+User-agent: *
+Sitemap: http://site1.example.com/text/sitemap.xml
+TXT
+        else
+          raise "#{uri} is not supposed to be fetched"
+        end
+      })
+    end
+
+    should "be properly parsed" do
+      assert @robots.allowed?("http://site1.example.com/foo")
+      assert_equal(["http://site1.example.com/text/sitemap.xml"], @robots.sitemaps("http://site1.example.com/"))
+    end
+  end
+
 end
