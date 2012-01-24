@@ -327,7 +327,9 @@ Allow: /2heavy/*.html
       robots.reset(url)
 
       assert robots.allowed?(url)
-      assert_instance_of WebRobots::ParseError, robots.error(url)
+      error = robots.error(url)
+      assert_instance_of WebRobots::ParseError, error
+      assert_equal URI('http://www.example.org/'), error.site
       assert_raise(WebRobots::ParseError) {
         robots.error!(url)
       }

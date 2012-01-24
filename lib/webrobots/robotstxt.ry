@@ -151,6 +151,17 @@ class WebRobots
   end
 
   class ParseError < Error
+    # The site's root URI
+    attr_reader :site
+
+    def initialize(message, site)
+      @message = message
+      @site = site
+    end
+
+    def to_s
+      @message
+    end
   end
 
   class RobotsTxt
@@ -225,7 +236,7 @@ class WebRobots
 
         do_parse
       rescue Racc::ParseError => e
-        raise ParseError, e.message
+        raise ParseError.new(e.message, @site)
       ensure
         @q.clear
       end
