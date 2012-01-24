@@ -341,7 +341,7 @@ Disallow: /
           else
             @options[ruleline.token.downcase] = ruleline.value
           end
-        }
+        } if ruleslines
         @acls.replace @acls.sort_by { |x|
           [-x.value.length, x.is_a?(AllowLine) ? -1 : 0]
         }

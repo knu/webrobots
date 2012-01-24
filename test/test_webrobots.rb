@@ -674,7 +674,7 @@ TXT
 
     should "be properly parsed" do
       assert @robots.allowed?("http://site1.example.com/foo")
-      # assert_equal(["http://site1.example.com/text/sitemap.xml"], @robots.sitemaps("http://site1.example.com/"))
+      assert_equal(["http://site1.example.com/text/sitemap.xml"], @robots.sitemaps("http://site1.example.com/"))
     end
   end
 
