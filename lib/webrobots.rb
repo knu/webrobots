@@ -18,13 +18,19 @@ class WebRobots
   #   the response body if successful, return an empty string if the
   #   resource is not found, and return nil or raise any error on
   #   failure.  Redirects should be handled within this proc.
+  #
+  # * :ignore_crawl_delay => if +true+, the robots.txt +Crawl-delay+
+  #   directive will be ignored during calls to allowed?(url) and
+  #   disallowed?(url).
   def initialize(user_agent, options = nil)
     @user_agent = user_agent
-    @parser = RobotsTxt::Parser.new(user_agent)
-    @parser_mutex = Mutex.new
 
     options ||= {}
     @http_get = options[:http_get] || method(:http_get)
+    @ignore_crawl_delay = !!options[:ignore_crawl_delay]
+
+    @parser = RobotsTxt::Parser.new(user_agent, @ignore_crawl_delay)
+    @parser_mutex = Mutex.new
 
     @robotstxt = create_cache()
   end
@@ -56,6 +62,13 @@ class WebRobots
   # Equivalent to !allowed?(url).
   def disallowed?(url)
     !allowed?(url)
+  end
+
+  # Returns the number of seconds that the configured agent should wait
+  # between successive requests to the site identified by +url+ according
+  # to the site's robots.txt +Crawl-delay+ directive.
+  def crawl_delay(url)
+    robots_txt_for(url).crawl_delay()
   end
 
   # Returns extended option values for a resource at +url+ in a hash
