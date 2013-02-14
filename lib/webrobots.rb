@@ -1,3 +1,4 @@
+require 'webrobots/version'
 require 'webrobots/robotstxt'
 require 'uri'
 require 'net/https'

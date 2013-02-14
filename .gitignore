@@ -1,17 +1,11 @@
-# rcov generated
+*.gem
+.bundle
+Gemfile.lock
+pkg/*
+
 coverage
-
-# rdoc generated
 rdoc
-
-# yard generated
 doc
 .yardoc
-
-# bundler
-.bundle
-
-# jeweler generated
-pkg
 
 /lib/webrobots/robotstxt.output
