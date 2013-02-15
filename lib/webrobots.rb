@@ -19,17 +19,32 @@ class WebRobots
   #   resource is not found, and return nil or raise any error on
   #   failure.  Redirects should be handled within this proc.
   #
-  # * :ignore_crawl_delay => if +true+, the robots.txt +Crawl-delay+
-  #   directive will be ignored during calls to allowed?(url) and
-  #   disallowed?(url).
+  # * :crawl_delay => determines how to react to Crawl-delay
+  #   directives.  If +:sleep+ is given, WebRobots sleeps as demanded
+  #   when allowed?(url)/disallowed?(url) is called.  This is the
+  #   default behavior.  If +:ignore+ is given, WebRobots does
+  #   nothing.  If a custom method, proc, or anything that responds to
+  #   .call(delay, last_checked_at), it is called.
   def initialize(user_agent, options = nil)
     @user_agent = user_agent
 
     options ||= {}
     @http_get = options[:http_get] || method(:http_get)
-    @ignore_crawl_delay = !!options[:ignore_crawl_delay]
+    crawl_delay_handler =
+      case value = options[:crawl_delay] || :sleep
+      when :ignore
+        nil
+      when :sleep
+        method(:crawl_delay_handler)
+      else
+        if value.respond_to?(:call)
+          value
+        else
+          raise ArgumentError, "invalid Crawl-delay handler: #{value.inspect}"
+        end
+      end
 
-    @parser = RobotsTxt::Parser.new(user_agent, @ignore_crawl_delay)
+    @parser = RobotsTxt::Parser.new(user_agent, crawl_delay_handler)
     @parser_mutex = Mutex.new
 
     @robotstxt = create_cache()
@@ -182,5 +197,12 @@ class WebRobots
       end
     }
     raise 'too many HTTP redirects'
+  end
+
+  def crawl_delay_handler(delay, last_checked_at)
+    if last_checked_at
+      delay -= Time.now - last_checked_at
+      sleep delay if delay > 0
+    end
   end
 end

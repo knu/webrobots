@@ -30,18 +30,21 @@ class WebRobots
   class RobotsTxt
 class Parser < Racc::Parser
 
-module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 169)
+module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 171)
 
-      def initialize(target = nil, ignore_crawl_delay = false)
+      def initialize(target, crawl_delay_handler = nil)
         super()
         @target = target
-        @ignore_crawl_delay = ignore_crawl_delay
+        @crawl_delay_handler = crawl_delay_handler
       end
 
       def parse!(input, site)
         parse(input, site)
       rescue Error => e
-        RobotsTxt.new(site, nil, :error => e, :target => @target, :ignore_crawl_delay => @ignore_crawl_delay)
+        RobotsTxt.new(site, nil,
+          :error => e,
+          :target => @target,
+          :crawl_delay_handler => @crawl_delay_handler)
       end
 
       KNOWN_TOKENS = %w[User-agent Allow Disallow Crawl-delay Sitemap]
@@ -335,7 +338,9 @@ module_eval(<<'.,.,', 'robotstxt.ry', 11)
   def _reduce_2(val, _values, result)
     			    body = val[2]
 			    result = RobotsTxt.new(@site, body,
-			      :target => @target, :sitemaps => @sitemaps, :ignore_crawl_delay => @ignore_crawl_delay)
+			      :target => @target,
+                              :sitemaps => @sitemaps,
+                              :crawl_delay_handler => @crawl_delay_handler)
 			  
     result
   end
@@ -369,7 +374,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 11)
 
 # reduce 16 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 42)
+module_eval(<<'.,.,', 'robotstxt.ry', 44)
   def _reduce_17(val, _values, result)
     			    @sitemaps << val[3]
 			  
@@ -377,7 +382,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 42)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 47)
+module_eval(<<'.,.,', 'robotstxt.ry', 49)
   def _reduce_18(val, _values, result)
     			    result = []
 			    result << val[0]
@@ -386,7 +391,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 47)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 52)
+module_eval(<<'.,.,', 'robotstxt.ry', 54)
   def _reduce_19(val, _values, result)
     			    result = []
 			  
@@ -394,7 +399,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 52)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 58)
+module_eval(<<'.,.,', 'robotstxt.ry', 60)
   def _reduce_20(val, _values, result)
     			    result << val[2]
 			  
@@ -402,7 +407,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 58)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 64)
+module_eval(<<'.,.,', 'robotstxt.ry', 66)
   def _reduce_21(val, _values, result)
     			    val[2].each_with_index { |line, i|
 			      warn "%s line %d: %s: orphan rule line" %
@@ -417,7 +422,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 64)
 
 # reduce 23 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 79)
+module_eval(<<'.,.,', 'robotstxt.ry', 81)
   def _reduce_24(val, _values, result)
     			    result = Record.new(val[1], val[2])
 			  
@@ -425,7 +430,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 79)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 84)
+module_eval(<<'.,.,', 'robotstxt.ry', 86)
   def _reduce_25(val, _values, result)
     			    result = [val[0]]
 			  
@@ -433,7 +438,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 84)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 89)
+module_eval(<<'.,.,', 'robotstxt.ry', 91)
   def _reduce_26(val, _values, result)
     			    result << val[1]
 			  
@@ -443,7 +448,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 89)
 
 # reduce 27 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 96)
+module_eval(<<'.,.,', 'robotstxt.ry', 98)
   def _reduce_28(val, _values, result)
     			    result = AgentLine.new(val[0], val[3])
 			  
@@ -455,7 +460,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 96)
 
 # reduce 30 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 104)
+module_eval(<<'.,.,', 'robotstxt.ry', 106)
   def _reduce_31(val, _values, result)
     			    result = [result]
 			    @rulelinenos = []
@@ -464,7 +469,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 104)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 110)
+module_eval(<<'.,.,', 'robotstxt.ry', 112)
   def _reduce_32(val, _values, result)
     			    result << val[1]
 			    @rulelinenos << @lineno
@@ -483,7 +488,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 110)
 
 # reduce 37 omitted
 
-module_eval(<<'.,.,', 'robotstxt.ry', 123)
+module_eval(<<'.,.,', 'robotstxt.ry', 125)
   def _reduce_38(val, _values, result)
     			    result = AllowLine.new(val[0], val[3])
 			  
@@ -491,7 +496,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 123)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 128)
+module_eval(<<'.,.,', 'robotstxt.ry', 130)
   def _reduce_39(val, _values, result)
     			    result = DisallowLine.new(val[0], val[3])
 			  
@@ -499,7 +504,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 128)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 133)
+module_eval(<<'.,.,', 'robotstxt.ry', 135)
   def _reduce_40(val, _values, result)
     			    result = CrawlDelayLine.new(val[0], val[3])
 			  
@@ -507,7 +512,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 133)
   end
 .,.,
 
-module_eval(<<'.,.,', 'robotstxt.ry', 138)
+module_eval(<<'.,.,', 'robotstxt.ry', 140)
   def _reduce_41(val, _values, result)
     			    result = ExtentionLine.new(val[0], val[3])
 			  
@@ -529,12 +534,12 @@ end   # class Parser
       @timestamp = Time.now
       @site = site
       @options = options || {}
-      @last_checked = nil
+      @last_checked_at = nil
 
       @error = @options[:error]
       @target = @options[:target]
       @sitemaps = @options[:sitemaps] || []
-      @ignore_crawl_delay = !!@options[:ignore_crawl_delay]
+      @crawl_delay_handler = @options[:crawl_delay_handler]
 
       if records && !records.empty?
         @records, defaults = [], []
@@ -580,11 +585,10 @@ end   # class Parser
     def allow?(request_uri, user_agent = nil)
       record = find_record(user_agent) or return true
       allow = record.allow?(request_uri)
-      if !@ignore_crawl_delay and @last_checked and delay = record.delay
-        delay -= Time.now - @last_checked
-        sleep delay if delay > 0
+      if delay = record.delay and @crawl_delay_handler
+        @crawl_delay_handler.call(delay, @last_checked_at)
       end
-      @last_checked = Time.now
+      @last_checked_at = Time.now
       return allow
     end
 

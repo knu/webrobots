@@ -406,7 +406,8 @@ Option3: Hi
       }
 
       @robots_mybot = WebRobots.new('MyBot', :http_get => http_get)
-      @robots_mybot_ignore = WebRobots.new('MyBot', :http_get => http_get, :ignore_crawl_delay => true)
+      @robots_mybot_ignore = WebRobots.new('MyBot', :http_get => http_get, :crawl_delay => :ignore)
+      @robots_mybot_custom = WebRobots.new('MyBot', :http_get => http_get, :crawl_delay => proc { |*args| @delay_args = args })
       @robots_herbot = WebRobots.new('HerBot', :http_get => http_get)
       @robots_hisbot = WebRobots.new('HisBot', :http_get => http_get)
     end
@@ -424,6 +425,13 @@ Option3: Hi
       assert_equal 'Foo',   @robots_mybot_ignore.option('http://www.example.org/', 'Option1')
       assert_equal 'Foo',   options['option1']
       assert_equal 'Hello', @robots_mybot_ignore.option('http://www.example.org/', 'Option2')
+      assert_equal 'Hello', options['option2']
+
+      options = @robots_mybot_custom.options('http://www.example.org/')
+      assert_equal 2, options.size
+      assert_equal 'Foo',   @robots_mybot_custom.option('http://www.example.org/', 'Option1')
+      assert_equal 'Foo',   options['option1']
+      assert_equal 'Hello', @robots_mybot_custom.option('http://www.example.org/', 'Option2')
       assert_equal 'Hello', options['option2']
 
       options = @robots_herbot.options('http://www.example.org/')
@@ -459,6 +467,7 @@ Option3: Hi
 
       assert_equal 1.5, @robots_mybot.crawl_delay('http://www.example.org/')
       assert_equal 1.5, @robots_mybot_ignore.crawl_delay('http://www.example.org/')
+      assert_equal 1.5, @robots_mybot_custom.crawl_delay('http://www.example.org/')
       assert_equal 0, @robots_herbot.crawl_delay('http://www.example.org/')
       assert_equal 0, @robots_hisbot.crawl_delay('http://www.example.org/')
 
@@ -479,6 +488,16 @@ Option3: Hi
       @robots_mybot_ignore.allowed?('http://www.example.org/article2.html')
       t3 = Time.now
       assert_in_delta 0, t3 - t2, 0.1
+
+      t1 = Time.now
+      @robots_mybot_custom.allowed?('http://www.example.org/')
+      @robots_mybot_custom.allowed?('http://www.example.org/article1.html')
+      t2 = Time.now
+      assert_in_delta 0, t2 - t1, 0.1
+      assert_instance_of Array, @delay_args
+      assert_equal 2, @delay_args.size
+      assert_equal 1.5, @delay_args[0]
+      assert_instance_of Time, @delay_args[1]
     end
   end
 

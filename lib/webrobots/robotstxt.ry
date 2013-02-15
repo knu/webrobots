@@ -11,7 +11,9 @@ rule
 			  {
 			    body = val[2]
 			    result = RobotsTxt.new(@site, body,
-			      :target => @target, :sitemaps => @sitemaps, :ignore_crawl_delay => @ignore_crawl_delay)
+			      :target => @target,
+                              :sitemaps => @sitemaps,
+                              :crawl_delay_handler => @crawl_delay_handler)
 			  }
 
   body			:
@@ -167,16 +169,19 @@ class WebRobots
   class RobotsTxt
 ---- inner
 
-      def initialize(target = nil, ignore_crawl_delay = false)
+      def initialize(target, crawl_delay_handler = nil)
         super()
         @target = target
-        @ignore_crawl_delay = ignore_crawl_delay
+        @crawl_delay_handler = crawl_delay_handler
       end
 
       def parse!(input, site)
         parse(input, site)
       rescue Error => e
-        RobotsTxt.new(site, nil, :error => e, :target => @target, :ignore_crawl_delay => @ignore_crawl_delay)
+        RobotsTxt.new(site, nil,
+          :error => e,
+          :target => @target,
+          :crawl_delay_handler => @crawl_delay_handler)
       end
 
       KNOWN_TOKENS = %w[User-agent Allow Disallow Crawl-delay Sitemap]
@@ -264,12 +269,12 @@ class WebRobots
       @timestamp = Time.now
       @site = site
       @options = options || {}
-      @last_checked = nil
+      @last_checked_at = nil
 
       @error = @options[:error]
       @target = @options[:target]
       @sitemaps = @options[:sitemaps] || []
-      @ignore_crawl_delay = !!@options[:ignore_crawl_delay]
+      @crawl_delay_handler = @options[:crawl_delay_handler]
 
       if records && !records.empty?
         @records, defaults = [], []
@@ -315,11 +320,10 @@ class WebRobots
     def allow?(request_uri, user_agent = nil)
       record = find_record(user_agent) or return true
       allow = record.allow?(request_uri)
-      if !@ignore_crawl_delay and @last_checked and delay = record.delay
-        delay -= Time.now - @last_checked
-        sleep delay if delay > 0
+      if delay = record.delay and @crawl_delay_handler
+        @crawl_delay_handler.call(delay, @last_checked_at)
       end
-      @last_checked = Time.now
+      @last_checked_at = Time.now
       return allow
     end
 
