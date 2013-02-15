@@ -24,6 +24,7 @@ This library helps write robots.txt compliant web robots in Ruby.
     "README.rdoc"
   ]
 
+  s.add_development_dependency("rake", [">= 0.9.2.2"])
   s.add_development_dependency("racc", [">= 0"])
   s.add_development_dependency("shoulda", [">= 0"])
   s.add_development_dependency("rdoc", ["> 2.4.2"])
