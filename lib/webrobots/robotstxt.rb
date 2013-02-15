@@ -32,15 +32,16 @@ class Parser < Racc::Parser
 
 module_eval(<<'...end robotstxt.ry/module_eval...', 'robotstxt.ry', 169)
 
-      def initialize(target = nil)
+      def initialize(target = nil, ignore_crawl_delay = false)
         super()
         @target = target
+        @ignore_crawl_delay = ignore_crawl_delay
       end
 
       def parse!(input, site)
         parse(input, site)
       rescue Error => e
-        RobotsTxt.new(site, nil, :error => e, :target => @target)
+        RobotsTxt.new(site, nil, :error => e, :target => @target, :ignore_crawl_delay => @ignore_crawl_delay)
       end
 
       KNOWN_TOKENS = %w[User-agent Allow Disallow Crawl-delay Sitemap]
@@ -334,7 +335,7 @@ module_eval(<<'.,.,', 'robotstxt.ry', 11)
   def _reduce_2(val, _values, result)
     			    body = val[2]
 			    result = RobotsTxt.new(@site, body,
-			      :target => @target, :sitemaps => @sitemaps)
+			      :target => @target, :sitemaps => @sitemaps, :ignore_crawl_delay => @ignore_crawl_delay)
 			  
     result
   end
@@ -533,6 +534,7 @@ end   # class Parser
       @error = @options[:error]
       @target = @options[:target]
       @sitemaps = @options[:sitemaps] || []
+      @ignore_crawl_delay = !!@options[:ignore_crawl_delay]
 
       if records && !records.empty?
         @records, defaults = [], []
@@ -578,12 +580,17 @@ end   # class Parser
     def allow?(request_uri, user_agent = nil)
       record = find_record(user_agent) or return true
       allow = record.allow?(request_uri)
-      if @last_checked and delay = record.delay
+      if !@ignore_crawl_delay and @last_checked and delay = record.delay
         delay -= Time.now - @last_checked
         sleep delay if delay > 0
       end
       @last_checked = Time.now
       return allow
+    end
+
+    def crawl_delay(user_agent = nil)
+      record = find_record(user_agent) or return 0
+      record.delay or return 0
     end
 
     def options(user_agent = nil)

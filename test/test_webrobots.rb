@@ -384,6 +384,12 @@ Option1: Foo
 Option2: Hello
 Crawl-Delay: 1.5
 
+User-Agent: HerBot
+Disallow: /2heavy/
+Allow: /2heavy/*.html
+Option1: Baz
+Option2: Qux
+
 User-Agent: *
 Disallow: /2heavy/
 Allow: /2heavy/*.html
@@ -400,6 +406,8 @@ Option3: Hi
       }
 
       @robots_mybot = WebRobots.new('MyBot', :http_get => http_get)
+      @robots_mybot_ignore = WebRobots.new('MyBot', :http_get => http_get, :ignore_crawl_delay => true)
+      @robots_herbot = WebRobots.new('HerBot', :http_get => http_get)
       @robots_hisbot = WebRobots.new('HisBot', :http_get => http_get)
     end
 
@@ -410,6 +418,20 @@ Option3: Hi
       assert_equal 'Foo',   options['option1']
       assert_equal 'Hello', @robots_mybot.option('http://www.example.org/', 'Option2')
       assert_equal 'Hello', options['option2']
+
+      options = @robots_mybot_ignore.options('http://www.example.org/')
+      assert_equal 2, options.size
+      assert_equal 'Foo',   @robots_mybot_ignore.option('http://www.example.org/', 'Option1')
+      assert_equal 'Foo',   options['option1']
+      assert_equal 'Hello', @robots_mybot_ignore.option('http://www.example.org/', 'Option2')
+      assert_equal 'Hello', options['option2']
+
+      options = @robots_herbot.options('http://www.example.org/')
+      assert_equal 2, options.size
+      assert_equal 'Baz',   @robots_herbot.option('http://www.example.org/', 'Option1')
+      assert_equal 'Baz',   options['option1']
+      assert_equal 'Qux',    @robots_herbot.option('http://www.example.org/', 'Option2')
+      assert_equal 'Qux',    options['option2']
 
       options = @robots_hisbot.options('http://www.example.org/')
       assert_equal 2, options.size
@@ -425,7 +447,20 @@ Option3: Hi
       assert_equal %w[
         http://www.example.org/sitemap-host1.xml
         http://www.example.org/sitemap-host2.xml
+      ], @robots_mybot_ignore.sitemaps('http://www.example.org/')
+      assert_equal %w[
+        http://www.example.org/sitemap-host1.xml
+        http://www.example.org/sitemap-host2.xml
+      ], @robots_herbot.sitemaps('http://www.example.org/')
+      assert_equal %w[
+        http://www.example.org/sitemap-host1.xml
+        http://www.example.org/sitemap-host2.xml
       ], @robots_hisbot.sitemaps('http://www.example.org/')
+
+      assert_equal 1.5, @robots_mybot.crawl_delay('http://www.example.org/')
+      assert_equal 1.5, @robots_mybot_ignore.crawl_delay('http://www.example.org/')
+      assert_equal 0, @robots_herbot.crawl_delay('http://www.example.org/')
+      assert_equal 0, @robots_hisbot.crawl_delay('http://www.example.org/')
 
       t1 = Time.now
       @robots_mybot.allowed?('http://www.example.org/')
@@ -435,6 +470,15 @@ Option3: Hi
       @robots_mybot.allowed?('http://www.example.org/article2.html')
       t3 = Time.now
       assert_in_delta 1.5, t3 - t2, 0.1
+
+      t1 = Time.now
+      @robots_mybot_ignore.allowed?('http://www.example.org/')
+      @robots_mybot_ignore.allowed?('http://www.example.org/article1.html')
+      t2 = Time.now
+      assert_in_delta 0, t2 - t1, 0.1
+      @robots_mybot_ignore.allowed?('http://www.example.org/article2.html')
+      t3 = Time.now
+      assert_in_delta 0, t3 - t2, 0.1
     end
   end
 
