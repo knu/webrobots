@@ -23,6 +23,6 @@ task :default => :test
 
 task :test => 'lib/webrobots/robotstxt.rb'
 
-file 'lib/webrobots/robotstxt.rb' => 'lib/webrobots/robotstxt.ry' do
-  sh 'racc', '-o', 'lib/webrobots/robotstxt.rb', 'lib/webrobots/robotstxt.ry'
+rule '.rb' => ['.ry'] do |t|
+  sh 'racc', '-o', t.name, t.source
 end
