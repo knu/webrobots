@@ -29,10 +29,10 @@ This library helps write robots.txt compliant web robots in Ruby.
 
   s.add_development_dependency("rake", [">= 0.9.2.2"])
   s.add_development_dependency("racc", [">= 0"]) unless RUBY_PLATFORM == "java"
-  s.add_development_dependency("shoulda", [">= 0"])
+  s.add_development_dependency("shoulda", [RUBY_VERSION < "1.9" ? "< 3.5.0" : ">= 0"])
   s.add_development_dependency("rdoc", ["> 2.4.2"])
   s.add_development_dependency("bundler", [">= 1.2"])
   s.add_development_dependency("nokogiri", [">= 1.4.4"])
-  s.add_development_dependency("simplecov", [">= 0"])
-  s.add_development_dependency("coveralls", [">= 0"])
+  s.add_development_dependency("simplecov", [">= 0"]) unless RUBY_VERSION < "1.9"
+  s.add_development_dependency("coveralls", [">= 0"]) unless RUBY_VERSION < "1.9"
 end
