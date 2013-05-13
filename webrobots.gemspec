@@ -34,4 +34,5 @@ This library helps write robots.txt compliant web robots in Ruby.
   s.add_development_dependency("bundler", [">= 1.2"])
   s.add_development_dependency("nokogiri", [">= 1.4.4"])
   s.add_development_dependency("simplecov", [">= 0"])
+  s.add_development_dependency("coveralls", [">= 0"])
 end
