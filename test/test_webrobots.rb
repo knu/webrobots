@@ -31,7 +31,7 @@ class TestWebRobots < Test::Unit::TestCase
         })
     end
 
-    should "allow any robot" do
+    should "be treated as full allow" do
       assert @robots.allowed?('http://site1.example.org/index.html')
       assert @robots.allowed?('http://site1.example.org/private/secret.txt')
       assert @robots.allowed?('http://site2.example.org/index.html')
@@ -43,7 +43,7 @@ class TestWebRobots < Test::Unit::TestCase
     end
   end
 
-  context "robots.txt that cannot be fetched" do
+  context "nil or error from a custom http_get proc" do
     setup do
       @robots = WebRobots.new('RandomBot', :http_get => lambda { |uri|
           case uri.to_s
@@ -67,7 +67,7 @@ class TestWebRobots < Test::Unit::TestCase
         })
     end
 
-    should "disallow any robot" do
+    should "be treated as full disallow" do
       assert @robots.disallowed?('http://site1.example.org/index.html')
       assert @robots.disallowed?('http://site1.example.org/private/secret.txt')
       assert @robots.disallowed?('http://site2.example.org/index.html')
@@ -412,7 +412,7 @@ Option3: Hi
       @robots_hisbot = WebRobots.new('HisBot', :http_get => http_get)
     end
 
-    should "read options" do
+    should "be properly read" do
       options = @robots_mybot.options('http://www.example.org/')
       assert_equal 2, options.size
       assert_equal 'Foo',   @robots_mybot.option('http://www.example.org/', 'Option1')
