@@ -171,8 +171,9 @@ class WebRobots
   end
 
   def http_get(uri)
+    response = nil
     referer = nil
-    10.times {
+    5.times {
       http = Net::HTTP.new(uri.host, uri.port)
       if http.use_ssl = uri.is_a?(URI::HTTPS)
         http.verify_mode = OpenSSL::SSL::VERIFY_PEER
@@ -190,13 +191,17 @@ class WebRobots
       when Net::HTTPRedirection
         referer = uri.to_s
         uri = URI(response['location'])
-      when Net::HTTPNotFound
+      when Net::HTTPClientError
         return ''
-      else
-        response.value
       end
     }
-    raise 'too many HTTP redirects'
+    case response
+    when Net::HTTPRedirection
+      # Treat too many redirections as not found
+      ''
+    else
+      raise "#{response.code} #{response.message}"
+    end
   end
 
   def crawl_delay_handler(delay, last_checked_at)
