@@ -531,28 +531,28 @@ Disallow: /
   context "robots.txt in the real world" do
     setup do
       @testbot = WebRobots.new('TestBot')
-      @msnbot = WebRobots.new('TestMSNBot')	# matches msnbot
+      @baidubot = WebRobots.new('TestBaiduspider')	# matches Baiduspider
     end
 
     should "be parsed for major sites" do
-      assert_nothing_raised {
-        assert !@testbot.allowed?("http://www.google.com/search")
-        assert !@testbot.allowed?("https://www.google.com/search")
-        assert !@testbot.allowed?("http://www.google.com/news/section?pz=1&cf=all&ned=jp&topic=y&ict=ln")
-        assert @testbot.allowed?("http://www.google.com/news/directory?pz=1&cf=all&ned=us&hl=en&sort=users&category=6")
-      }
-      assert_nothing_raised {
-        assert @testbot.allowed?("http://www.yahoo.com/")
-        assert !@testbot.allowed?("http://www.yahoo.com/?")
-        assert !@testbot.allowed?("http://www.yahoo.com/p/foo")
-      }
-      assert_nothing_raised {
-        assert !@testbot.allowed?("http://store.apple.com/vieworder")
-        assert @msnbot.allowed?("http://store.apple.com/vieworder")
-      }
-      assert_nothing_raised {
-        assert !@testbot.allowed?("http://github.com/login")
-      }
+      VCR.use_cassette("major_sites") do
+        assert_nothing_raised {
+          assert !@testbot.allowed?("https://www.google.com/search")
+          assert !@testbot.allowed?("https://www.google.com/catalogs")
+          assert @testbot.allowed?("https://www.google.com/catalogs/about")
+        }
+        assert_nothing_raised {
+          assert @testbot.allowed?("https://www.yahoo.com/")
+          assert !@testbot.allowed?("https://www.yahoo.com/p/foo")
+        }
+        assert_nothing_raised {
+          assert @testbot.allowed?("http://www.apple.com/jp/foo")
+          assert !@baidubot.allowed?("http://www.apple.com/jp/foo")
+        }
+        assert_nothing_raised {
+          assert !@testbot.allowed?("https://github.com/login")
+        }
+      end
     end
   end
 

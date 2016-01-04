@@ -9,6 +9,13 @@ rescue Bundler::BundlerError => e
 end
 require 'test/unit'
 require 'shoulda'
+require 'webmock/test_unit'
+require 'vcr'
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'test/vcr_cassettes'
+  c.hook_into :webmock
+end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
