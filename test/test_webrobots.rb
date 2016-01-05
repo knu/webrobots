@@ -51,57 +51,57 @@ class TestWebRobots < Test::Unit::TestCase
     end
 
     should "treat 201 as success" do
-      stub_request(:get, @txt_uri).to_return(status: 201, body: '# Just created!')
+      stub_request(:get, @txt_uri).to_return(:status => 201, :body => '# Just created!')
       assert_equal '# Just created!', @robots.__send__(:http_get, @txt_uri)
       assert_requested :get, @txt_uri
     end
 
     should "treat redirects more than 5 times as full allow" do
       redirect_uri = @site_uri + '/redirect'
-      stub_request(:get, /\A#{Regexp.quote(@site_uri.to_s)}/).to_return(status: 301, headers: { Location: redirect_uri.to_s })
+      stub_request(:get, /\A#{Regexp.quote(@site_uri.to_s)}/).to_return(:status => 301, :headers => { 'Location' => redirect_uri.to_s })
       assert_equal '', @robots.__send__(:http_get, @txt_uri)
-      assert_requested :get, @txt_uri, times: 1
-      assert_requested :get, redirect_uri, times: 4
+      assert_requested :get, @txt_uri, :times => 1
+      assert_requested :get, redirect_uri, :times => 4
     end
 
     should "treat 400 as full allow" do
-      stub_request(:get, @txt_uri).to_return(status: 400, body: 'Bad Request!')
+      stub_request(:get, @txt_uri).to_return(:status => 400, :body => 'Bad Request!')
       assert_equal '', @robots.__send__(:http_get, @txt_uri)
       assert_requested :get, @txt_uri
     end
 
     should "treat 401 as full allow" do
-      stub_request(:get, @txt_uri).to_return(status: 401, body: 'Unauthorized!')
+      stub_request(:get, @txt_uri).to_return(:status => 401, :body => 'Unauthorized!')
       assert_equal '', @robots.__send__(:http_get, @txt_uri)
       assert_requested :get, @txt_uri
     end
 
     should "treat 403 as full allow" do
-      stub_request(:get, @txt_uri).to_return(status: 403, body: 'Forbidden!')
+      stub_request(:get, @txt_uri).to_return(:status => 403, :body => 'Forbidden!')
       assert_equal '', @robots.__send__(:http_get, @txt_uri)
       assert_requested :get, @txt_uri
     end
 
     should "treat 404 as full allow" do
-      stub_request(:get, @txt_uri).to_return(status: 404, body: 'Not Found!')
+      stub_request(:get, @txt_uri).to_return(:status => 404, :body => 'Not Found!')
       assert_equal '', @robots.__send__(:http_get, @txt_uri)
       assert_requested :get, @txt_uri
     end
 
     should "treat 500 as error after retrying 5 times" do
-      stub_request(:get, @txt_uri).to_return(status: 500, body: 'Internal Server Error!')
+      stub_request(:get, @txt_uri).to_return(:status => 500, :body => 'Internal Server Error!')
       assert_raise {
         @robots.__send__(:http_get, @txt_uri)
       }
-      assert_requested :get, @txt_uri, times: 5
+      assert_requested :get, @txt_uri, :times => 5
     end
 
     should "treat 503 as error after retrying 5 times" do
-      stub_request(:get, @txt_uri).to_return(status: 503, body: 'Service Unavailable!')
+      stub_request(:get, @txt_uri).to_return(:status => 503, :body => 'Service Unavailable!')
       assert_raise {
         @robots.__send__(:http_get, @txt_uri)
       }
-      assert_requested :get, @txt_uri, times: 5
+      assert_requested :get, @txt_uri, :times => 5
     end
   end
 

@@ -34,6 +34,7 @@ This library helps write robots.txt compliant web robots in Ruby.
   s.add_development_dependency("webmock")
   s.add_development_dependency("vcr")
   if RUBY_VERSION < "1.9"
+    s.add_development_dependency('i18n', '< 0.7.0')
     # Cap dependency on activesupport with < 4.0 on behalf of
     # shoulda-matchers to satisfy bundler.
     s.add_development_dependency("activesupport", ["< 4.0"])
