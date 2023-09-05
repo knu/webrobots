@@ -8,7 +8,7 @@ rescue Bundler::BundlerError => e
   exit e.status_code
 end
 require 'test/unit'
-require 'shoulda'
+require 'shoulda/context'
 require 'webmock/test_unit'
 require 'vcr'
 
