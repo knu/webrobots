@@ -14,7 +14,10 @@ Gem::Specification.new do |s|
 This library helps write robots.txt compliant web robots in Ruby.
   EOS
 
-  s.files         = `git ls-files`.split("\n")
+  s.files         = `git ls-files lib`.split("\n") + [
+    'LICENSE.txt',
+    'README.rdoc'
+  ]
   s.test_files    = s.files.grep(%r{/test_[^/]+\.rb$})
   s.executables   = s.files.grep(%r{^bin/[^.]}).map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
