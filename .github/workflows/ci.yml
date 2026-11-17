@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [master]
+    tags: ["v*"]
   pull_request:
 
 permissions:
@@ -41,5 +42,48 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
-          bundler-cache: true
+      - run: bundle install
       - run: bundle exec rake test
+
+  publish:
+    name: Publish gem
+    needs: test
+    if: github.repository == 'knu/webrobots' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: rubygems.org
+      url: https://rubygems.org/gems/webrobots/versions/${{ steps.gem.outputs.version }}
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Harden runner
+        uses: step-security/harden-runner@v2.22.4
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ruby/setup-ruby@v1.338.0
+        with:
+          ruby-version: "4.0"
+          bundler: latest
+      - run: bundle install
+      - name: Check release version
+        id: gem
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          bundle exec ruby -e '
+            require "webrobots/version"
+            version = Webrobots::VERSION
+            abort "tag does not match gem version" unless ENV.fetch("RELEASE_TAG") == "v#{version}"
+            File.open(ENV.fetch("GITHUB_OUTPUT"), "a") { |f| f.puts "version=#{version}" }
+          '
+      - name: Build gem
+        run: bundle exec rake build
+      - name: Publish to RubyGems
+        uses: rubygems/release-gem@v1.4.1
+        with:
+          await-release: false

@@ -34,6 +34,15 @@ Development and testing require Ruby 3.3 or later.
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
 * Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
+== Releasing
+
+Update the version and push the release commit to master.  After CI passes,
+push the matching vVERSION tag.  The CI workflow tests the tag and publishes
+the gem to RubyGems.org through Trusted Publishing.
+
+The trusted publisher uses repository knu/webrobots, workflow ci.yml, and
+GitHub environment rubygems.org.
+
 == Copyright
 
 Copyright (c) 2010-2016 Akinori MUSHA. See LICENSE.txt for
