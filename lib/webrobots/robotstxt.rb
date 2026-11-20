@@ -686,7 +686,7 @@ Disallow: /
     class AccessControlLine < Line
       def compile
         @empty = @value.empty?
-        re_src = '\A'
+        re_src = +'\A'
         s = StringScanner.new(@value)
         until s.eos?
           if t = s.scan(/[^%*$]+/)
