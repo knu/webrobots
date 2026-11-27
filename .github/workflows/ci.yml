@@ -25,7 +25,7 @@ jobs:
         ruby: ["3.3", "3.4", "4.0", ruby-head]
     steps:
       - name: Harden runner
-        uses: step-security/harden-runner@v2.22.4
+        uses: step-security/harden-runner@v2.23.0
         with:
           egress-policy: audit
       - uses: actions/checkout@v7.0.1
@@ -38,7 +38,7 @@ jobs:
         run: |
           gh extension install github/gh-actions-lock --pin v0.4.1
           gh actions-lock --verify
-      - uses: ruby/setup-ruby@v1.338.0
+      - uses: ruby/setup-ruby@v1.343.0
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler: latest
@@ -59,13 +59,13 @@ jobs:
       id-token: write
     steps:
       - name: Harden runner
-        uses: step-security/harden-runner@v2.22.4
+        uses: step-security/harden-runner@v2.23.0
         with:
           egress-policy: audit
       - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - uses: ruby/setup-ruby@v1.338.0
+      - uses: ruby/setup-ruby@v1.343.0
         with:
           ruby-version: "4.0"
           bundler: latest
@@ -84,6 +84,6 @@ jobs:
       - name: Build gem
         run: bundle exec rake build
       - name: Publish to RubyGems
-        uses: rubygems/release-gem@v1.4.1
+        uses: rubygems/release-gem@v1.4.2
         with:
           await-release: false
